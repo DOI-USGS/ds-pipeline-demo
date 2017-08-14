@@ -6,6 +6,7 @@ file.data <- "SampleGanttCharts_wRanks.xlsx"
 save.path <- "cached_data"
 sample.file <- "sample_data.rds"
 save.file <- "all_flow.rds"
+save.sites <- "summary_sites.rds"
 
 data.wide <- readRDS(file.path(save.path,sample.file))
 
@@ -43,4 +44,7 @@ all_flow <- readNWISdv(summary.flow$siteID,"00060",
                        startDate = min(summary.flow$start),
                        endDate = max(summary.flow$end))
 
+dir.create(file.path(save.path),recursive = TRUE, showWarnings = FALSE)
+
 saveRDS(all_flow, file = file.path(save.path,save.file))
+saveRDS(summary.sites, file = file.path(save.path,save.sites))
