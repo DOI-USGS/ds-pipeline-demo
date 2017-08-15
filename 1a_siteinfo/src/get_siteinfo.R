@@ -2,6 +2,10 @@ library(aws.s3)
 library(aws.signature)
 library(yaml)
 
+# This script downloads the site summary info from AWS
+# It saves it as-is
+# The configuration is in 1a_siteinfo/in
+
 get_siteinfo <- function(siteinfo.config){
   
   config.args <- yaml.load_file(siteinfo.config)
