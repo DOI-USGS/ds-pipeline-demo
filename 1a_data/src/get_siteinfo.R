@@ -30,4 +30,5 @@ get_siteinfo <- function(siteinfo.config){
 
 }
 
-get_siteinfo(siteinfo.config = "1a_siteinfo/in/siteinfo_config.yaml")
+get_siteinfo(siteinfo.config = "1a_data/in/siteinfo_config.yaml")
+get_siteinfo(siteinfo.config = "1a_data/in/sample_config.yaml")
