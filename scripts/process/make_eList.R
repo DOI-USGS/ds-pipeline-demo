@@ -96,7 +96,7 @@ make_eList <- function(){
       
       Sample <- filter(Sample, Date %in% Daily$Date)
       
-      if(nrow(Sample) == 0){
+      if(nrow(Sample) < 50){
         master_list <- bind_rows(master_list, 
                                  data.frame(id = paste(i, params$paramShortName[j], sep="_"),
                                             complete = FALSE,
