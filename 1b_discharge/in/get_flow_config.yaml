@@ -1,0 +1,10 @@
+depends:
+  dataRetrieval:
+    repo: CRAN
+    version: 2.7.2
+fetch.args:
+  path: "2a_filter/out"
+  summary.file: "summary_flow.rds"
+save.args:
+  save.path: "1b_discharge/out"
+  save.file: "flow.rds"
