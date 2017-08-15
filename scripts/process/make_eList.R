@@ -43,11 +43,25 @@ make_eList <- function(){
   
   dir.create(file.path(model.path),recursive = TRUE, showWarnings = FALSE)
   
+  master_list <- data.frame(id = character(),
+                            complete = logical(),
+                            missing_all_sample = logical(),
+                            missing_all_flow = logical(),
+                            stringsAsFactors = FALSE)
+  
   for(i in site.summary$SITE){
     sample.data <- filter(all.samples, SITE == i)
     flow_site <- site.summary$siteID[which(site.summary$SITE == i)]
     flow <- filter(all.flow, site_no == flow_site)
-    if(nrow(flow) == 0){next}
+    if(nrow(flow) == 0){
+      master_list <- bind_rows(master_list, 
+                               data.frame(id = paste(i, params$paramShortName, sep="_"),
+                                          complete = FALSE,
+                                          missing_all_sample = FALSE,
+                                          missing_all_flow = TRUE,
+                                          stringsAsFactors = FALSE))
+      next
+    }
     names(flow) <- c('agency', 'site', 'dateTime', 'value', 'code')
     
     Daily <- populateDaily(flow, 35.314667,verbose = FALSE)
@@ -59,7 +73,16 @@ make_eList <- function(){
       names(sample.sub) <- c("dateTime", "value", "code")
       sample.sub <- sample.sub[,c("dateTime", "code","value")]
       sample.sub <- sample.sub[!is.na(sample.sub$value),]
-      if(nrow(sample.sub) == 0){next}
+      if(nrow(sample.sub) == 0){
+        master_list <- bind_rows(master_list, 
+                                 data.frame(id = paste(i, params$paramShortName[j], sep="_"),
+                                            complete = FALSE,
+                                            missing_all_sample = TRUE,
+                                            missing_all_flow = FALSE,
+                                            stringsAsFactors = FALSE))
+        
+        next
+      }
       compressedData <- compressData(sample.sub, verbose=FALSE)
       Sample <- populateSampleColumns(compressedData)
       INFO <- data.frame(paramShortName = params$paramShortName[j],
@@ -73,18 +96,33 @@ make_eList <- function(){
       
       Sample <- filter(Sample, Date %in% Daily$Date)
       
-      if(nrow(Sample) == 0){next}
+      if(nrow(Sample) == 0){
+        master_list <- bind_rows(master_list, 
+                                 data.frame(id = paste(i, params$paramShortName[j], sep="_"),
+                                            complete = FALSE,
+                                            missing_all_sample = TRUE,
+                                            missing_all_flow = FALSE,
+                                            stringsAsFactors = FALSE))
+        next
+      }
 
       eList <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
-      saveRDS(eList, file = file.path(model.path,paste0(params$paramShortName[j],"_",i,".rds")))
+      saveRDS(eList, file = file.path(model.path,paste0(i,"_",params$paramShortName[j],".rds")))
       
       plot(eList)
       
+      master_list <- bind_rows(master_list, 
+                               data.frame(id = paste(i, params$paramShortName[j], sep="_"),
+                                          complete = TRUE,
+                                          missing_all_sample = FALSE,
+                                          missing_all_flow = FALSE,
+                                          stringsAsFactors = FALSE))
     }
     
   }
   
   dev.off()
+  saveRDS(master_list, file = file.path(save.path,"master_list.rds"))
   
 }
 
