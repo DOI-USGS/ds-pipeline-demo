@@ -36,7 +36,7 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = TRUE,
                                           stringsAsFactors = FALSE))
-      saveRDS(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]))
+      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
       next
     }
     names(flow) <- c('agency', 'site', 'dateTime', 'value', 'code')
@@ -57,7 +57,7 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        saveRDS(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]))
+        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
         next
       }
       compressedData <- compressData(sample.sub, verbose=FALSE)
@@ -80,7 +80,7 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        saveRDS(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]))
+        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
         next
       }
       
@@ -95,7 +95,7 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = FALSE,
                                           stringsAsFactors = FALSE))
-      saveRDS(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]))
+      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
     }
     
   }

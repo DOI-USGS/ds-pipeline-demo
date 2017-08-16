@@ -24,4 +24,4 @@ checks:
 save.args:
   save.path: "3_merge/out"
   save.graph: "data_checks.pdf"
-  save.file: "progress.rds"
+  save.file: "progress.csv"
