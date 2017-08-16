@@ -18,4 +18,5 @@ filter.args:
   min.samples: 400
 save.args:
   save.path: "2a_filter/out"
-  save.file: "summary_flow.rds"
+  save.flow: "summary_flow.rds"
+  save.site: "summary_sites.rds"
