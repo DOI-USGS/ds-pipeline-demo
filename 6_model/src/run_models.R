@@ -35,4 +35,4 @@ run_models <- function(model.config){
   
 }
 
-run_models(model.config = "4_model/in/model_config.yaml")
+run_models(model.config = "6_model/in/model_config.yaml")

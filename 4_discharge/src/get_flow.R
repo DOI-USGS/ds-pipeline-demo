@@ -24,4 +24,4 @@ get_flow <- function(flow.config){
   
 }
 
-get_flow(flow.config = "1b_discharge/in/get_flow_config.yaml")
+get_flow(flow.config = "4_discharge/in/get_flow_config.yaml")

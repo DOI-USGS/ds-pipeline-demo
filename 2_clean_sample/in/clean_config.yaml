@@ -18,8 +18,8 @@ depends:
     repo: CRAN
     version: 1.10.4
 fetch.args:
-  path: "1a_data/out"
+  path: "1_get_raw_data/out"
   file.data: "USGS_WQ_DATA_02-16.xlsx"
 save.args:
-  save.path: "2a_clean_sample/out"
+  save.path: "2_clean_sample/out"
   save.file: "sample_data.rds"

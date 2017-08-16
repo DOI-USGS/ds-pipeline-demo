@@ -12,6 +12,6 @@ fetch.args:
   s3Profile: 'default'
   s3Path: 'MMSD'
   bucket: 'ds-pipeline'
-  file.data.summary: "SampleGanttCharts_wRanks.xlsx"
+  file.data.summary: "USGS_WQ_DATA_02-16.xlsx"
 save.args:
-  save.path: "1a_data/out"
+  save.path: "1_get_raw_data/out"

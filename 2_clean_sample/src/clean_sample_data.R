@@ -72,4 +72,4 @@ clean_sample_data <- function(clean.config){
   saveRDS(data.wide, file = file.path(save.path,save.file))
 }
 
-clean_sample_data(clean.config = "2a_clean_sample/in/clean_config.yaml")
+clean_sample_data(clean.config = "2_clean_sample/in/clean_config.yaml")

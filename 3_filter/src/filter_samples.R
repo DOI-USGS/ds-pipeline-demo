@@ -50,4 +50,4 @@ filter_samples <- function(filter.config){
     
 }
 
-filter_samples(filter.config = "2a_filter/in/filter_config.yaml")
+filter_samples(filter.config = "3_filter/in/filter_config.yaml")

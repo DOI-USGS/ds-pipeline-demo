@@ -106,4 +106,4 @@ merge_sample_flow <- function(merge_config){
 
 }
 
-merge_sample_flow(merge_config = "3_merge/in/merge_config.yaml")
+merge_sample_flow(merge_config = "5_merge/in/merge_config.yaml")
