@@ -1,53 +1,29 @@
 library(EGRET)
 library(dplyr)
+library(yaml)
 
-make_eList <- function(){
+merge_sample_flow <- function(merge_config){
   
-  save.path <- "cached_data"
-  sample.file <- "sample_data.rds"
-  flow.file <- "all_flow.rds"
-  sites.file <- "summary_sites.rds"
-  model.path <- "cached_data/model"
+  config.args <- yaml.load_file(merge_config)
   
-  pdf(file = file.path(save.path,"data_check.pdf"))
+  fetch.args <- config.args$fetch.args
+  save.args <- config.args$save.args
+  params <- data.frame(config.args$params, stringsAsFactors = FALSE)
+
+  all.samples <- readRDS(file.path(fetch.args[["sample.path"]],fetch.args[["sample.file"]]))
+  all.flow <- readRDS(file.path(fetch.args[["flow.path"]],fetch.args[["flow.file"]]))
+  site.summary <- readRDS(file.path(fetch.args[["site.path"]],fetch.args[["site.file"]]))
   
-  params <- data.frame(name = c("BOD20 (mg/L)",                    
-              "BOD5 (mg/L)",                      
-              "FC (MPN/100mL)",                   
-              "NH3 (mg/L)",                       
-              "TP (mg/L)",                        
-              "Total Suspended Solids (mg/L)"),
-              paramShortName = c("BOD20",                    
-                                 "BOD5",                      
-                                 "FC",                   
-                                 "NH3",                       
-                                 "TP",                        
-                                 "Total Suspended Solids"),
-              param.units = c("mg/L",                    
-                              "mg/L",                      
-                              "MPN/100mL",                   
-                              "mg/L",                       
-                              "mg/L",                        
-                              "mg/L"),
-              stringsAsFactors = FALSE)
-  
-  all.samples <- readRDS(file.path(save.path,sample.file))
-  all.flow <- readRDS(file.path(save.path,flow.file))
-  site.summary <- readRDS(file.path(save.path,sites.file))
-  
-  site.summary <- site.summary %>%
-    rename(siteID = `USGS Flow Site to use`) %>%
-    filter(count > 400) %>%
-    filter(!is.na(siteID)) %>%
-    arrange(desc(count))
-  
-  dir.create(file.path(model.path),recursive = TRUE, showWarnings = FALSE)
+
+  dir.create(file.path(save.args[["save.path"]]),recursive = TRUE, showWarnings = FALSE)
+  pdf(file = file.path(save.args[["save.path"]],save.args[["save.graph"]]))
   
   master_list <- data.frame(id = character(),
                             complete = logical(),
                             missing_all_sample = logical(),
                             missing_all_flow = logical(),
                             stringsAsFactors = FALSE)
+  
   
   for(i in site.summary$SITE){
     sample.data <- filter(all.samples, SITE == i)
@@ -60,6 +36,7 @@ make_eList <- function(){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = TRUE,
                                           stringsAsFactors = FALSE))
+      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
       next
     }
     names(flow) <- c('agency', 'site', 'dateTime', 'value', 'code')
@@ -80,7 +57,7 @@ make_eList <- function(){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        
+        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
         next
       }
       compressedData <- compressData(sample.sub, verbose=FALSE)
@@ -96,18 +73,19 @@ make_eList <- function(){
       
       Sample <- filter(Sample, Date %in% Daily$Date)
       
-      if(nrow(Sample) < 50){
+      if(nrow(Sample) < config.args$checks[["min.samples"]]){
         master_list <- bind_rows(master_list, 
                                  data.frame(id = paste(i, params$paramShortName[j], sep="_"),
                                             complete = FALSE,
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
+        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
         next
       }
-
+      
       eList <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
-      saveRDS(eList, file = file.path(model.path,paste0(i,"_",params$paramShortName[j],".rds")))
+      saveRDS(eList, file = file.path(save.args[["save.path"]],paste0(i,"_",params$paramShortName[j],".rds")))
       
       plot(eList)
       
@@ -117,13 +95,15 @@ make_eList <- function(){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = FALSE,
                                           stringsAsFactors = FALSE))
+      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
     }
     
   }
   
   dev.off()
-  saveRDS(master_list, file = file.path(save.path,"master_list.rds"))
   
+  
+
 }
 
-make_eList()
+merge_sample_flow(merge_config = "3_merge/in/merge_config.yaml")

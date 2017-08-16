@@ -3,19 +3,27 @@ library(tidyr)
 library(stringr)
 library(dplyr)
 library(data.table)
+library(yaml)
 
 
-get_sample_data <- function(){
-  file.data <- "USGS_WQ_DATA_02-16.xlsx"
-  save.path <- "cached_data"
-  save.file <- "sample_data.rds"
+clean_sample_data <- function(clean.config){
   
-  sheet.names <- excel_sheets(file.path(save.path,file.data))
+  config.args <- yaml.load_file(clean.config)
+  
+  fetch.args <- config.args$fetch.args
+  file.data <- fetch.args[["file.data"]]
+  fetch.path <- fetch.args[["path"]]
+  
+  save.args <- config.args$save.args
+  save.path <- save.args[["save.path"]]
+  save.file <- save.args[["save.file"]]
+  
+  sheet.names <- excel_sheets(file.path(fetch.path,file.data))
   
   data.full <- data.frame()
   
   for(i in sheet.names){
-    data.sheet <- read_excel(file.path(save.path,file.data), 
+    data.sheet <- read_excel(file.path(fetch.path,file.data), 
                              sheet = i,col_types = c("text","date",
                                                      rep("text",7)))
     
@@ -63,4 +71,5 @@ get_sample_data <- function(){
   
   saveRDS(data.wide, file = file.path(save.path,save.file))
 }
-get_sample_data()
+
+clean_sample_data(clean.config = "2a_clean_sample/in/clean_config.yaml")

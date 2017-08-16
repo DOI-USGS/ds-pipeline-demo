@@ -1,0 +1,27 @@
+depends:
+  EGRET:
+    repo: CRAN
+    version: 	2.6.0
+  dplyr:
+    repo: CRAN
+    version: 0.7.2
+  yaml:
+    repo: CRAN
+    version: 2.1.14
+fetch.args:
+  flow.path: "1b_discharge/out"
+  flow.file: "flow.rds"
+  sample.path: "2a_clean_sample/out"
+  sample.file: "sample_data.rds"
+  site.path: "2a_filter/out"
+  site.file: "summary_sites.rds"
+params:
+  name: ["BOD20 (mg/L)","BOD5 (mg/L)","FC (MPN/100mL)","NH3 (mg/L)","TP (mg/L)","Total Suspended Solids (mg/L)"]
+  paramShortName: ["BOD20","BOD5","FC","NH3","TP","Total Suspended Solids"]
+  param.units: ["mg/L","mg/L","MPN/100mL","mg/L","mg/L","mg/L"]
+checks:
+  min.samples: 50
+save.args:
+  save.path: "3_merge/out"
+  save.graph: "data_checks.pdf"
+  save.file: "progress.csv"
