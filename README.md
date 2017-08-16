@@ -1,5 +1,31 @@
 # MMSD_trends
 
+## Workflow
+
+Generally can be run:
+
+```
+source("1_get_raw_data/src/get_siteinfo.R")
+source("2_clean_sample/src/clean_sample_data.R")
+source("3_filter/src/filter_samples.R")
+source("4_discharge/src/get_flow.R")
+source("5_merge/src/merge_sample_flow.R")
+source("6_model/src/run_models.R")
+```
+
+What's going on?
+
+### 1_get_raw_data
+
+### 2_clean_sample
+
+### 3_filter
+
+### 4_discharge
+
+### 5_merge
+
+### 6_model
 
 ## Disclaimer
 
