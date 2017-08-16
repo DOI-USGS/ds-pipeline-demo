@@ -17,15 +17,33 @@ What's going on?
 
 ### 1_get_raw_data
 
+Raw data files are saved on a private S3 bucket. The function in this step assumes you have a "default" credential set up on your computer. Then, the files are simply downloaded to the "1_get_raw_data/out" folder.
+
 ### 2_clean_sample
+
+This step opens the raw data, converts the data to numbers + remarks (because the data is coming in like "< 0.5" for example).
 
 ### 3_filter
 
+This step associates the MMSD sites with USGS gages, and filters out sites that don't have enough data. 
+
+TODO: some sites on the raw data Excel file don't have USGS flow sites properly assigned. When we update that file, we'll want to only get new data.
+
 ### 4_discharge
+
+This step gets the discharge data using `dataRetrieval`. 
+
+TODO: only get new data!
 
 ### 5_merge
 
+This step merges the water-quality data with the flow data and makes `EGRET`'s "eList" objects. A "master_list" csv is saved at every step to watch the progress. Also, a pdf of the data is create to check how it all looks.
+
+TODO: make smarter using that list.
+
 ### 6_model
+
+This step runs a simple `lm` model on the data. It also outputs a progress.csv file. A pdf of all the model output in basic `lm` plots is output.
 
 ## Disclaimer
 
