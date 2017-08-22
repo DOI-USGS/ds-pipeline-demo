@@ -56,9 +56,11 @@ LIB=$(call rvector,$(filter $(wildcard lib/*.*),$^))
 RLB=$(call rvector,$(filter $(wildcard lib/*.R),$^))
 OUT=$(call rvector,$(filter $(wildcard */out/*.*),$^))
 
-# Call R via ${RSCRIPT} to avoid typing all this. Automatically loads any dependencies 
+# Call R via ${RSCRIPT} to avoid typing all this. Automatically loads
+# any dependencies in the /src/ directory and ending in R
 RSCRIPT=Rscript -e 'x <- lapply(${RSC}, source)'
 
 # ${ADDLOG} at the end of an Rscript call directs both stdout and stderr
 # to a file named like the target but with the .Rlog suffix
-ADDLOG=-e 'devtools::session_info()' > $(basename $@).Rlog 2>&1 
+LOGFILE=$(subst src/,,$(dir $(word 1,$(filter $(wildcard */src/*.*),$^))))log/$(notdir $(basename $@)).Rlog
+ADDLOG=-e 'devtools::session_info()' > ${LOGFILE} 2>&1
