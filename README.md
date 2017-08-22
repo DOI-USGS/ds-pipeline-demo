@@ -44,7 +44,7 @@ Configuration to use `make` with this R project may involve these steps:
 
 ## Building the project
 
-Build this project, or pieces of it, using `make`. You can do this either in RStudio using (Ctrl/Cmd)+Shift+B, or in bash (use Alt,t,s to open a bash window). The command from bash is `make -f [makefile.mak]` where the specific makefile you want depends on which phase or target you want to build.
+Build this project, or pieces of it, using `make`. You can do this either in RStudio using (Ctrl/Cmd)+Shift+B, or in bash (use Alt,t,s to open a bash window). The basic shell command is `make -f [makefile.mak]` where the specific makefile you want depends on which phase or target you want to build.
 
 ### Building from bash
 
@@ -87,6 +87,11 @@ If you want to build from RStudio, configure your Build options (Build Tab | Mor
 ```
 Pick one of these lines to enter in "Additional arguments" and you'll be able to run that line with just the (Ctrl/Cmd)+Shift+B shortcut.
 
+### What happens in a build
+
+Subfolders named 'out' and 'log' exist within each numbered folder, and there are a few 'doc' subfolders here and there. On GitHub, these are empty except for README.md files. The README.md files serve as placeholders so that the directories can be versioned and don't need to be created by the project scripts. When you build the project, these folders become populated with data files, figures, etc. ('out'), R session logfiles ('log'), and ancillary documentation ('doc'). 
+
+
 ## R scripts
 
 What's going on?
@@ -120,6 +125,7 @@ TODO: make smarter using that list.
 ### 6_model
 
 This step runs a simple `lm` model on the data. It also outputs a progress.csv file. A pdf of all the model output in basic `lm` plots is output.
+
 
 
 ## Disclaimer
