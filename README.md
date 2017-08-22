@@ -1,17 +1,93 @@
 # MMSD_trends
 
-## Workflow
+## Setup
 
-Generally can be run:
+Configuration to use `make` with this R project may involve these steps:
 
+1. Ensure that the current version of Rscript is available on your bash PATH. A good place to do this is the .bash_profile file in your HOME directory, where HOME is whatever bash, not RStudio, believes it to be (type `echo $HOME` or `echo ~` in bash to find out). This file+line may have been added for you when you installed Git.
+    ```
+    ### HOME/.bash_profile ###
+    export PATH=$PATH:/c/Program\ Files/R/R-3.4.1/bin/x64:/c/Program\ Files/R/R-3.4.1/bin/x64:/c/Program\ Files/R/R-3.4.1/bin/x64
+    ```
+
+2. Especially on Windows, you may find that your `R_USER` environment variable is different between the RStudio console and a bash R session, even if you open bash from RStudio. The common pattern is that RStudio calls your Documents directory home, while bash calls your Documents/.. directory home. This is inconvenient for automatically loading profile information as found in .Rprofile, etc., so to resolve this, (a) create two .Rprofiles, one in each possible home. One of them should contain all important R calls, while the other one should simply source the first, and (b) in the important .Rprofile, define the R_USER variable to be the one containing your user R library (e.g., R/xxx-library/3.4).
+    ```
+    ### RStudio-R_USER/.Rprofile (the important one) ####
+    # set R_USER
+    Sys.setenv(R_USER="C:/Users/yourusername/Documents")
+    ```
+    
+    ```
+    ### bash-R_USER/.Rprofile (the redirect one) ####
+    source('~/Documents/.Rprofile')
+    ```
+
+3. For bash to recognize your user R library, you may need to explicitly add it to `.libPaths()`, as follows. We first set the value of `$R_USER` (see above) and then use that value to set the path:
+
+    ```
+    ### RStudio-R_USER/.Rprofile (adding lines to the above) ####
+    # set R library paths
+    version_maj_min <- paste(unclass(getRversion())[[1]][1:2], collapse='.')
+    .libPaths(c(file.path(Sys.getenv("R_USER"), "R/win-library", version_maj_min),
+                file.path(Sys.getenv('R_HOME'), "library")))
+    ```
+
+4. If there are credentials involved, our team will likely be using the `dssecrets` package. This is a private package, so to install from GitHub, it will be useful to specify a [GitHub Personal Access Token](https://github.com/settings/tokens) (`GITHUB_PAT`) in your environment variables. It may also be necessary to tell `secret` exactly where to look for your private key (`USER_KEY`) that matches your public key in `dssecrets`. You can specify both variables in the same place: the same .Rprofile file mentioned twice above.
+    ```
+    ### RStudio-R_USER/.Rprofile (adding still more lines) ####
+    # Set additional environment variables
+    Sys.setenv(
+      GITHUB_PAT='yourgithubpat',
+      USER_KEY="C:/Users/yourusername/.ssh/id_rsa_orsimilar")
+    ```
+
+
+## Building the project
+
+Build this project, or pieces of it, using `make`. You can do this either in RStudio using (Ctrl/Cmd)+Shift+B, or in bash (use Alt,t,s to open a bash window). The command from bash is `make -f [makefile.mak]` where the specific makefile you want depends on which phase or target you want to build.
+
+### Building from bash
+
+The following are examples of complete commands to be typed in the bash shell:
+
+To build the entire project, build the main Makefile. Because 'Makefile' is the default filename for `make`, all you need to type is the program name:
 ```
-source("1_get_raw_data/src/get_siteinfo.R")
-source("2_clean_sample/src/clean_sample_data.R")
-source("3_filter/src/filter_samples.R")
-source("4_discharge/src/get_flow.R")
-source("5_merge/src/merge_sample_flow.R")
-source("6_model/src/run_models.R")
+make
 ```
+
+To build the third phase and any of its dependencies:
+```
+make -f build/3_filter.mak
+```
+
+To build just the summary_sites.rds target of phase 3:
+```
+make -f build/3_filter.mak 3_filter/out/summary_sites.rds
+```
+
+To see what which commands are due to be run, without actually running them (for phase 3 in this example):
+```
+make -f build/3_filter.mak -n
+```
+
+### Building from RStudio
+
+If you want to build from RStudio, configure your Build options (Build Tab | More | Configure Build Tools). In the "Additional arguments" box, type everything in the command except the first word, `make `. The "Additional arguments" that correspond to the preceding four examples are:
+```
+[blank]
+```
+```
+-f build/3_filter.mak
+```
+```
+-f build/3_filter.mak 3_filter/out/summary_sites.rds
+```
+```
+-f build/3_filter.mak -n
+```
+Pick one of these lines to enter in "Additional arguments" and you'll be able to run that line with just the (Ctrl/Cmd)+Shift+B shortcut.
+
+## R scripts
 
 What's going on?
 
@@ -45,8 +121,8 @@ TODO: make smarter using that list.
 
 This step runs a simple `lm` model on the data. It also outputs a progress.csv file. A pdf of all the model output in basic `lm` plots is output.
 
-## Disclaimer
 
+## Disclaimer
 
 This software is in the public domain because it contains materials that originally came from the U.S. Geological Survey (USGS), an agency of the United States Department of Interior. For more information, see the official USGS copyright policy at <https://www.usgs.gov/visual-id/credit_usgs.html#copyright>
 
