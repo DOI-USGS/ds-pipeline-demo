@@ -1,7 +1,7 @@
 depends:
   EGRET:
     repo: CRAN
-    version: 	2.6.0
+    version: 2.6.1.9002
   dplyr:
     repo: CRAN
     version: 0.7.2
