@@ -2,9 +2,3 @@ depends:
   dataRetrieval:
     repo: CRAN
     version: 2.7.2
-fetch.args:
-  path: "3_filter/out"
-  summary.file: "summary_flow.rds"
-save.args:
-  save.path: "4_discharge/out"
-  save.file: "flow.rds"

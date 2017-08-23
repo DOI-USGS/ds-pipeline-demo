@@ -1,6 +1,6 @@
 # Makefile for filter phase
 
-3_filter: 3_filter/out/summary_sites.rds 3_filter/out/summary_flow.rds
+3_filter : 3_filter/out/summary_sites.rds 3_filter/out/summary_flow.rds
 	@echo "Made all for 3_filter.mak"
 
 3_filter/out/summary_sites.rds :\

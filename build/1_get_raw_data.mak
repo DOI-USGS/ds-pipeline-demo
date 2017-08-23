@@ -1,6 +1,6 @@
 # Makefile for data phase
 
-1_get_raw_data: 1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx 1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx
+1_get_raw_data : 1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx 1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx
 	@echo "Made all for 1_get_raw_data.mak"
 
 1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx :\
