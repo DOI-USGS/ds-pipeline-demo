@@ -2,7 +2,7 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.pdf.as, save.csv.as){
+merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.csv.as){
   
   config.args <- yaml.load_file(merge.config)
   
@@ -11,8 +11,6 @@ merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, s
   all.samples <- readRDS(sample.file)
   all.flow <- readRDS(flow.file)
   site.summary <- readRDS(site.file)
-  
-  pdf(file = save.pdf.as)
   
   master_list <- data.frame(id = character(),
                             complete = logical(),
@@ -81,9 +79,8 @@ merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, s
       }
       
       eList <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
-      saveRDS(eList, file = file.path(save.args[["save.path"]],paste0(i,"_",params$paramShortName[j],".rds")))
+      saveRDS(eList, file = file.path(config.args$save.args[["save.path"]],paste0(i,"_",params$paramShortName[j],".rds")))
       
-      plot(eList)
       
       master_list <- bind_rows(master_list, 
                                data.frame(id = paste(i, params$paramShortName[j], sep="_"),
@@ -95,7 +92,18 @@ merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, s
     }
     
   }
-  
-  dev.off()
+}
 
+plot_models <- function(eList.dir='5_merge/out', save.pdf.as='5_merge/doc/data_checks.pdf') {
+  
+  eList.files <- dir(eList.dir, pattern='.rds', full.names=TRUE)
+  
+  graphics.off()
+  pdf(file = save.pdf.as)
+  for(eList.file in eList.files){
+    eList <- readRDS(eList.file)
+    plot(eList)
+  }
+  dev.off()
+  
 }
