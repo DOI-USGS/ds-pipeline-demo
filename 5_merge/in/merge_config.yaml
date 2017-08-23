@@ -21,7 +21,11 @@ params:
   param.units: ["mg/L","mg/L","MPN/100mL","mg/L","mg/L","mg/L"]
 checks:
   min.samples: 50
+explore.args:
+  path: "5_merge/doc"
+  graph: "data_checks.pdf"
+log.args:
+  path: "5_merge/log"
+  file: "progress.csv"
 save.args:
-  save.path: "5_merge/out"
-  save.graph: "data_checks.pdf"
-  save.file: "progress.csv"
+  path: "5_merge/out"
