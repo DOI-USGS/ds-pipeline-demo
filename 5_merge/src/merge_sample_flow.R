@@ -2,21 +2,17 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge_config){
+merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.pdf.as, save.csv.as){
   
-  config.args <- yaml.load_file(merge_config)
+  config.args <- yaml.load_file(merge.config)
   
-  fetch.args <- config.args$fetch.args
-  save.args <- config.args$save.args
   params <- data.frame(config.args$params, stringsAsFactors = FALSE)
 
-  all.samples <- readRDS(file.path(fetch.args[["sample.path"]],fetch.args[["sample.file"]]))
-  all.flow <- readRDS(file.path(fetch.args[["flow.path"]],fetch.args[["flow.file"]]))
-  site.summary <- readRDS(file.path(fetch.args[["site.path"]],fetch.args[["site.file"]]))
+  all.samples <- readRDS(sample.file)
+  all.flow <- readRDS(flow.file)
+  site.summary <- readRDS(site.file)
   
-
-  dir.create(file.path(save.args[["save.path"]]),recursive = TRUE, showWarnings = FALSE)
-  pdf(file = file.path(save.args[["save.path"]],save.args[["save.graph"]]))
+  pdf(file = save.pdf.as)
   
   master_list <- data.frame(id = character(),
                             complete = logical(),
@@ -36,7 +32,7 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = TRUE,
                                           stringsAsFactors = FALSE))
-      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+      write.csv(master_list, file = save.csv.as,row.names = FALSE)
       next
     }
     names(flow) <- c('agency', 'site', 'dateTime', 'value', 'code')
@@ -57,7 +53,7 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+        write.csv(master_list, file = save.csv.as,row.names = FALSE)
         next
       }
       compressedData <- compressData(sample.sub, verbose=FALSE)
@@ -80,7 +76,7 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+        write.csv(master_list, file = save.csv.as,row.names = FALSE)
         next
       }
       
@@ -95,15 +91,11 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = FALSE,
                                           stringsAsFactors = FALSE))
-      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+      write.csv(master_list, file = save.csv.as,row.names = FALSE)
     }
     
   }
   
   dev.off()
-  
-  
 
 }
-
-merge_sample_flow(merge_config = "5_merge/in/merge_config.yaml")
