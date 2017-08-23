@@ -8,10 +8,3 @@ depends:
   yaml:
     repo: CRAN
     version: 2.1.14
-fetch.args:
-  data.path: "5_merge/out"
-  progress.file: "progress.csv"
-save.args:
-  save.path: "6_model/out"
-  save.graph: "model_check.pdf"
-  save.file: "progress.csv"

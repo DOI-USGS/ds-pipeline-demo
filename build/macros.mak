@@ -63,4 +63,4 @@ RSCRIPT=Rscript -e 'x <- lapply(${RSC}, source)'
 # ${ADDLOG} at the end of an Rscript call directs both stdout and stderr
 # to a file named like the target but with the .Rlog suffix
 LOGFILE=$(subst src/,,$(dir $(word 1,$(filter $(wildcard */src/*.*),$^))))log/$(notdir $(basename $@)).Rlog
-ADDLOG=-e 'traceback()' -e 'warnings()' -e 'devtools::session_info()' > ${LOGFILE} 2>&1
+ADDLOG=-e 'warnings()' -e 'devtools::session_info()' > ${LOGFILE} 2>&1
