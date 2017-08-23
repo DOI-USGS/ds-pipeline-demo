@@ -15,14 +15,18 @@
 		site.file="$(word 3,$^)",\
 		flow.file="$(word 4,$^)",\
 		merge.config="$(word 5,$^)",\
-		save.csv.as="$@")'\
+		save.csv.as="$@",\
+		save.eLists.in="5_merge/out")'\
 		${ADDLOG}
 
-# using progress.csv as a status indicator
+# using progress.csv as a status indicator; just update the .rds timestamps
+5_merge/out/%.rds : 5_merge/doc/progress.csv
+	@touch "$@"
+
 5_merge/doc/data_checks.pdf :\
-		5_merge/doc/progress.csv\
-		5_merge/src/merge_sample_flow.R
-	${RSCRIPT} -e 'plot_models(eList.dir="5_merge/out", save.pdf.as="$@")' ${ADDLOG}
+		5_merge/src/merge_sample_flow.R\
+		5_merge/out/*.rds
+	${RSCRIPT} -e 'plot_eLists(eList.dir="5_merge/out", save.pdf.as="$@")' ${ADDLOG}
 
 # recursively include all previous phase & helper makefiles
 include build/4_discharge.mak

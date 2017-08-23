@@ -8,10 +8,9 @@
 		1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx\
 		2_clean_sample/out/sample_data.rds\
 		3_filter/cfg/filter_config.yaml
-	${RSCRIPT}\
-		-e 'summarize_sites(\
-			sample.file="$(word 3,$^)", site.file="$(word 2,$^)",\
-			config.file="$(word 4,$^)", save.as="$@")'\
+	${RSCRIPT} -e 'summarize_sites(\
+		sample.file="$(word 3,$^)", site.file="$(word 2,$^)",\
+		config.file="$(word 4,$^)", save.as="$@")'\
 		${ADDLOG}
 
 # Other ways you could make the summary_sites target:
@@ -33,8 +32,9 @@
 3_filter/out/summary_flow.rds :\
 		3_filter/src/filter_samples.R\
 		3_filter/out/summary_sites.rds
-	${RSCRIPT}\
-		-e 'summarize_flow(smry.sample.file="$(word 2,$^)", save.as="$@")'\
+	${RSCRIPT} -e 'summarize_flow(\
+		smry.sample.file="$(word 2,$^)",\
+		save.as="$@")'\
 		${ADDLOG}
 
 # recursively include all previous phase & helper makefiles

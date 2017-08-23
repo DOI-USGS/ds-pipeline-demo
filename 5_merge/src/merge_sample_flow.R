@@ -2,7 +2,7 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.csv.as){
+merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.csv.as, save.eLists.in){
   
   config.args <- yaml.load_file(merge.config)
   
@@ -79,7 +79,7 @@ merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, s
       }
       
       eList <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
-      saveRDS(eList, file = file.path(config.args$save.args[["save.path"]],paste0(i,"_",params$paramShortName[j],".rds")))
+      saveRDS(eList, file = file.path(save.eLists.in, paste0(i,"_",params$paramShortName[j],".rds")))
       
       
       master_list <- bind_rows(master_list, 
@@ -94,7 +94,7 @@ merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, s
   }
 }
 
-plot_models <- function(eList.dir='5_merge/out', save.pdf.as='5_merge/doc/data_checks.pdf') {
+plot_eLists <- function(eList.dir='5_merge/out', save.pdf.as='5_merge/doc/data_checks.pdf') {
   
   eList.files <- dir(eList.dir, pattern='.rds', full.names=TRUE)
   

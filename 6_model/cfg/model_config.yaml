@@ -11,8 +11,6 @@ depends:
 fetch.args:
   data.path: "5_merge/out"
   progress.file: "progress.csv"
-  site.path: "3_filter/out"
-  site.file: "summary_sites.rds"
 save.args:
   save.path: "6_model/out"
   save.graph: "model_check.pdf"
