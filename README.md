@@ -15,12 +15,16 @@ Configuration to use `make` with this R project may involve these steps:
     ```
 
 2. Especially on Windows, you may find that your `R_USER` environment variable is different between the RStudio console and a bash R session, even if you open bash from RStudio. The common pattern is that RStudio calls your Documents directory home, while bash calls your Documents/.. directory home. This is inconvenient for automatically loading profile information as found in .Rprofile, etc., so to resolve this, (a) create two .Rprofiles, one in each possible home. One of them should contain all important R calls, while the other one should simply source the first, and (b) in the important .Rprofile, define the R_USER variable to be the one containing your user R library (e.g., R/xxx-library/3.4).
+
+    The first file to edit (or create) is called .Rprofile and lives in the directory path returned when you run `Sys.getenv("R_USER")` in the RStudio console.
+    
     ```
     ### RStudio-R_USER/.Rprofile (the important one) ####
     # set R_USER
     Sys.setenv(R_USER="C:/Users/yourusername/Documents")
     ```
     
+    The second file to edit (or create) is also called .Rprofile, but it lives in the directory path returned when you run `Sys.getenv("R_USER")` from an R session in bash: enter `R` at the bash prompt to open an R session and an R prompt, then type `Sys.getenv("R_USER")` at that R prompt.
     ```
     ### bash-R_USER/.Rprofile (the redirect one) ####
     source('~/Documents/.Rprofile')
