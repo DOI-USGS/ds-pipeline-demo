@@ -128,9 +128,27 @@ This step runs a simple `lm` model on the data. It also outputs a progress.csv f
 
 ### Dependency tree
 
-![Dependencies](build/make_diagram.png)
+![Dependencies](build/make_diagram.svg)
 
-The procedure for making a make dependency diagram could surely be simplified...I started at a Software Carpentry [instructor' sguide](http://swcarpentry.github.io/swc-releases/2016.06/make-novice/extras/guide.html), downloaded a Scientific Linux virutal machine at (osboxes.org)[http://www.osboxes.org/scientific-linux/#scientific-linux-7-3-vmware], opened the virtual machine with Oracle VirtualBox, and created the .png file there. And because I have yet to get Guest Additions working on that box, I uploaded the .png to Google Drive and downloaded onto my host computer.
+The procedure for making a make dependency diagram could surely be simplified...I started at a Software Carpentry [instructor' sguide](http://swcarpentry.github.io/swc-releases/2016.06/make-novice/extras/guide.html), downloaded a Scientific Linux virutal machine at (osboxes.org)[http://www.osboxes.org/scientific-linux/#scientific-linux-7-3-vmware], opened the virtual machine with Oracle VirtualBox, installed graphviz & git & gcc, built makefile2graph according to the SW Carpentry instructions, and created the .dot file there like so:
+
+```
+make -f build/6_model.mak -Bnd | make2graph > make_diagram.dot
+```
+
+And because I have yet to get Guest Additions working on that box, I uploaded the make_diagram.dot to Google Drive and downloaded onto my host computer. Then I installed the 'DOT' R package and ran
+
+```r
+dot(paste(grep('build', readLines('build/make_diagram.dot'), invert=TRUE, value=TRUE), collapse=' '), file='build/make_diagram.svg')
+```
+
+Clearly lots of room for improvement here:
+
+- being able to build the .dot file without a virtual machine
+- being able to build the .dot file a version of the directory that has all the cached files would be great
+- something prettier (not seeing many examples on the web for Makefiles, though)
+
+...but hey, it's a diagram!
 
 
 ## Disclaimer
