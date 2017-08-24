@@ -130,6 +130,8 @@ This step runs a simple `lm` model on the data. It also outputs a progress.csv f
 
 ![Dependencies](build/make_diagram.png)
 
+The procedure for making a make dependency diagram could surely be simplified...I started at a Software Carpentry [instructor' sguide](http://swcarpentry.github.io/swc-releases/2016.06/make-novice/extras/guide.html), downloaded a Scientific Linux virutal machine at (osboxes.org)[http://www.osboxes.org/scientific-linux/#scientific-linux-7-3-vmware], opened the virtual machine with Oracle VirtualBox, and created the .png file there. And because I have yet to get Guest Additions working on that box, I uploaded the .png to Google Drive and downloaded onto my host computer.
+
 
 ## Disclaimer
 
