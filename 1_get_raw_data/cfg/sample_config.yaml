@@ -8,7 +8,3 @@ depends:
   yaml:
     repo: CRAN
     version: 2.1.14
-fetch.args:
-  s3Profile: 'default'
-  s3Path: 'MMSD'
-  bucket: 'ds-pipeline'
