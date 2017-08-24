@@ -128,7 +128,9 @@ This step runs a simple `lm` model on the data. It also outputs a progress.csv f
 
 ### Dependency tree
 
-![Dependencies](build/make_diagram.svg)
+<a href="build/make_diagram.svg">
+  <img src="build/make_diagram.svg" width="100%" height="144">
+</a>
 
 The procedure for making a make dependency diagram could surely be simplified...I started at a Software Carpentry [instructor' sguide](http://swcarpentry.github.io/swc-releases/2016.06/make-novice/extras/guide.html), downloaded a Scientific Linux virutal machine at (osboxes.org)[http://www.osboxes.org/scientific-linux/#scientific-linux-7-3-vmware], opened the virtual machine with Oracle VirtualBox, installed graphviz & git & gcc, built makefile2graph according to the SW Carpentry instructions, and created the .dot file there like so:
 
