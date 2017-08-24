@@ -1,0 +1,75 @@
+target_default: 1_ldas_host
+
+packages:
+  - yaml
+  - dplyr
+  - geoknife
+  - XML
+  - doMC
+  - foreach
+  - powstreams
+  
+## All R files that are used must be listed here:
+sources:
+  - ../lib/load_profile.R
+  - ../1_ldas_host/code/nc_sub_grids.R
+  - ../1_ldas_host/code/ldas_sub_files.R
+  - ../1_ldas_host/code/ldas_server_files.R
+  - ../1_ldas_host/code/nccopy_ldas.R
+  - ../1_ldas_host/code/create_ldas_ncml.R
+  - ../1_ldas_host/code/sync_ncml.R
+
+targets:
+  1_ldas_host:
+    depends: 
+      - ../1_ldas_host/out/nldas_nc_status.txt
+      - nldas.ncml.sync
+      - ../1_ldas_host/out/gldas_nc_status.txt
+      - gldas.ncml.sync
+
+  internal.config:
+    command: load_profile()
+  
+  ldas.config:
+    command: yaml.load_file("../1_ldas_host/in/ldas_subset.yml")
+
+  nldas.grids:
+    command: nc_sub_grids(ldas.config, target_name)
+    
+  gldas.grids:
+    command: nc_sub_grids(ldas.config, target_name)
+  
+  ../1_ldas_host/out/nldas_nc_files.tsv:
+    command: ldas_sub_files(nldas.grids, ldas.config, target_name)
+  
+  ../1_ldas_host/out/gldas_nc_files.tsv:
+    command: ldas_sub_files(gldas.grids, ldas.config, target_name)
+    depends:  ../1_ldas_host/out/nldas_nc_status.txt
+  
+  ../1_ldas_host/out/nldas_nc_status.txt:
+    command: nccopy_ldas('../1_ldas_host/out/nldas_nc_files.tsv', target_name, internal.config)
+    
+  ../1_ldas_host/out/gldas_nc_status.txt:
+    command: nccopy_ldas('../1_ldas_host/out/gldas_nc_files.tsv', target_name, internal.config)
+    
+  nldas.server.files:
+    command: ldas_server_files(ldas.config, target_name)
+    depends:
+      - ../1_ldas_host/out/nldas_nc_status.txt
+    
+  gldas.server.files:
+    command: ldas_server_files(ldas.config, target_name)
+    depends:
+      - ../1_ldas_host/out/gldas_nc_status.txt
+  
+  ../1_ldas_host/out/nldas.ncml:
+    command: create_ldas_ncml(nldas.server.files, target_name)
+  
+  ../1_ldas_host/out/gldas.ncml:
+    command: create_ldas_ncml(gldas.server.files, target_name, ldas.config)
+  
+  nldas.ncml.sync:
+    command: sync_ncml('../1_ldas_host/out/nldas.ncml', internal.config)
+  
+  gldas.ncml.sync:
+    command: sync_ncml('../1_ldas_host/out/gldas.ncml', internal.config)

@@ -1,0 +1,15 @@
+# Ensures that the entire project is up to date
+
+packages:
+  - remake
+
+includes:
+  - 1_site_data.yml
+  - 1_ldas_host.yml
+  - 1_timeseries.yml
+  - 4_data_release.yml
+  - 4_manuscript.yml
+
+targets:
+  all:
+    depends: ../1_site_data/out/site_list.txt

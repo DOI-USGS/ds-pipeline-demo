@@ -1,0 +1,22 @@
+packages:
+  - aws.s3
+  - aws.signature
+  - dplyr
+  
+## All R files that are used must be listed here:
+sources:
+  - lib/s3.R
+
+targets:
+  all:
+    depends: 
+      - 1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx
+      - 1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx
+      
+      
+  1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx:
+    command: get_s3(target_name, "lib/s3_config.yaml")
+  
+  1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx:
+    command: get_s3(target_name, "lib/s3_config.yaml")
+    
