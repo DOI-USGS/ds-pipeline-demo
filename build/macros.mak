@@ -66,13 +66,12 @@ RSCRIPT=Rscript -e 'x <- lapply(${RSL}, source)'
 LOGFILE=$(subst src/,,$(dir $(word 1,$(filter $(wildcard */src/*.*),$^))))log/$(notdir $(basename $@)).Rlog
 ADDLOG=-e 'warnings()' -e 'devtools::session_info()' > ${LOGFILE} 2>&1
 
-# Use the addlog function instead of the ADDLOG macro to manually specify the
-# parent directory of log/xx.Rlog. Useful if the default doesn't work for you -
-# i.e., if no /src/ files are dependencies or the first one doesn't indicate
-# the phase directory where we want this .Rlog file to go
-define logfile
-$(addprefix $(1),/log/$(notdir $(basename $@)).Rlog)
-endef
-define addlog
--e 'warnings()' -e 'devtools::session_info()' > $(call logfile,$(1)) 2>&1
-endef
+# this macro creates a timestamp text string in UTC
+DATETIME=echo "$(shell date -u '+%Y-%m-%d %H:%M:%S %z')"
+
+# this rule automatically looks to s3 if an *.s3 file exists and the corresponding * file is required. important for a shared cache.
+% : %.s3\
+		lib/s3.R lib/s3_config.yaml
+	${RSCRIPT}\
+		-e 'get_s3(file.name="$@", s3.config="lib/s3_config.yaml")'\
+		-e 'warnings()' -e 'devtools::session_info()' > $(dir $(patsubst %/,%,$(dir $@)))log/$(notdir $(basename $@)).s3log 2>&1
