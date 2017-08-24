@@ -126,6 +126,9 @@ TODO: make smarter using that list.
 
 This step runs a simple `lm` model on the data. It also outputs a progress.csv file. A pdf of all the model output in basic `lm` plots is output.
 
+### Dependency tree
+
+![Dependencies](build/make_diagram.png)
 
 
 ## Disclaimer
