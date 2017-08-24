@@ -55,12 +55,24 @@ RSC=$(call rvector,$(filter $(wildcard */src/*.R),$^))
 LIB=$(call rvector,$(filter $(wildcard lib/*.*),$^))
 RLB=$(call rvector,$(filter $(wildcard lib/*.R),$^))
 OUT=$(call rvector,$(filter $(wildcard */out/*.*),$^))
+RSL=$(call rvector,$(filter $(wildcard lib/*.R),$^) $(filter $(wildcard */src/*.R),$^))
 
 # Call R via ${RSCRIPT} to avoid typing all this. Automatically loads
 # any dependencies in the /src/ directory and ending in R
-RSCRIPT=Rscript -e 'x <- lapply(${RSC}, source)'
+RSCRIPT=Rscript -e 'x <- lapply(${RSL}, source)'
 
 # ${ADDLOG} at the end of an Rscript call directs both stdout and stderr
 # to a file named like the target but with the .Rlog suffix
 LOGFILE=$(subst src/,,$(dir $(word 1,$(filter $(wildcard */src/*.*),$^))))log/$(notdir $(basename $@)).Rlog
 ADDLOG=-e 'warnings()' -e 'devtools::session_info()' > ${LOGFILE} 2>&1
+
+# Use the addlog function instead of the ADDLOG macro to manually specify the
+# parent directory of log/xx.Rlog. Useful if the default doesn't work for you -
+# i.e., if no /src/ files are dependencies or the first one doesn't indicate
+# the phase directory where we want this .Rlog file to go
+define logfile
+$(addprefix $(1),/log/$(notdir $(basename $@)).Rlog)
+endef
+define addlog
+-e 'warnings()' -e 'devtools::session_info()' > $(call logfile,$(1)) 2>&1
+endef
