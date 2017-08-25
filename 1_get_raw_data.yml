@@ -22,4 +22,3 @@ targets:
   
   1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx:
     command: get_s3(target_name, "lib/s3_config.yaml")
-    

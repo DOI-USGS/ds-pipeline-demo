@@ -11,6 +11,7 @@ packages:
 sources:
   - 3_filter/src/summarize_sites.R
   - 3_filter/src/summarize_samples.R
+  - 3_filter/src/summarize_flow.R
 
 targets:
   3_filter:
