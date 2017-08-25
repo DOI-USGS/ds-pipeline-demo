@@ -1,0 +1,24 @@
+target_default: 3_filter
+
+include:
+  - 2_clean_sample.yml
+
+packages:
+  - readxl
+  - dplyr
+  - yaml
+  
+sources:
+  - 3_filter/src/summarize_sites.R
+  - 3_filter/src/summarize_samples.R
+
+targets:
+  3_filter:
+    depends: 
+      - 3_filter/out/summary_flow.rds
+  
+  3_filter/out/summary_sites.rds: 
+    command: summarize_sites('2_clean_sample/out/sample_data.rds', '1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx', '3_filter/cfg/filter_config.yaml', target_name) 
+    
+  3_filter/out/summary_flow.rds:
+    command: summarize_flow('3_filter/out/summary_sites.rds', target_name)

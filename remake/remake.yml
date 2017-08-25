@@ -4,12 +4,13 @@ packages:
   - remake
 
 includes:
-  - 1_site_data.yml
-  - 1_ldas_host.yml
-  - 1_timeseries.yml
-  - 4_data_release.yml
-  - 4_manuscript.yml
+  - 1_get_raw_data.yml
+  - 2_clean_sample.yml
+  - 3_filter.yml
+  - 4_discharge.yml
+  - 5_merge.yml
+  - 6_model.yml
 
 targets:
   all:
-    depends: ../1_site_data/out/site_list.txt
+    depends: 6_model/doc/model_check.pdf

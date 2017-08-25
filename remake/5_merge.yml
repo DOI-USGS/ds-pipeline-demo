@@ -1,0 +1,20 @@
+target_default: 5_merge
+
+include:
+  - 4_discharge.yml
+
+packages:
+  - EGRET
+  - dplyr
+  - yaml
+  
+sources:
+  - 5_merge/src/merge_sample_flow.R
+
+targets:
+  5_merge:
+    depends: 
+      - 5_merge/doc/progress.csv
+  
+  5_merge/doc/progress.csv: 
+    command: merge_sample_flow('5_merge/cfg/merge_config.yaml', '2_clean_sample/out/sample_data.rds', '3_filter/out/summary_sites.rds', '4_discharge/out/flow.rds', target_name)
