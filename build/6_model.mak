@@ -18,13 +18,14 @@
 6_model/out/%_lm.rds : 6_model/doc/progress.csv
 	@touch "$@"
 
-6_model/doc/model_check.pdf :\
+6_model/doc/model_check.pdf.s3 :\
 		6_model/src/plot_models.R\
-		6_model/out/*_lm.rds
+		6_model/out/*_lm.rds\
+		lib/s3.R lib/s3_config.yaml
 	${RSCRIPT} -e 'plot_models(\
 		model.dir="$(dir $(word 2,$^))",\
-		save.pdf.as="$@")'\
-		${ADDLOG}
+		save.pdf.as="$(subst .s3,,$@)")'\
+		${POSTS3}
 
 # recursively include all previous phase & helper makefiles
 include build/5_merge.mak

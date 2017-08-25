@@ -9,10 +9,7 @@
 		lib/s3.R lib/s3_config.yaml
 	${RSCRIPT}\
 		-e 'clean_sample_data(sample.file=${OUT}, save.as="$(subst .s3,,$@)")'\
-		-e 'post_s3(file.name="$(subst .s3,,$@)", s3.config="lib/s3_config.yaml")'\
-		${ADDLOG}
-	${DATETIME} > $@ # create the .st file
-	@touch $(subst .s3,,$@) # make the .rds file newer than the .st file
+		${POSTS3}
 
 # recursively include all previous phase & helper makefiles
 include build/1_get_raw_data.mak
