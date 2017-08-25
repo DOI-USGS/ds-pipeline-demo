@@ -1,13 +1,11 @@
 library(dplyr)
 
-summarize_flow <- function(smry.sample.file, save.as) {
-
-  summary.samples <- readRDS(smry.sample.file)
+summarize_flow <- function(summary.samples) {
   
   summary.flow <- summary.samples %>%
     group_by(siteID) %>%
     summarise(start = min(begin),
               end = max(end))
   
-  saveRDS(summary.flow, file=save.as)
+  return(summary.flow)
 }

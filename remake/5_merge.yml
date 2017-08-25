@@ -17,4 +17,4 @@ targets:
       - 5_merge/doc/progress.csv
   
   5_merge/doc/progress.csv: 
-    command: merge_sample_flow('5_merge/cfg/merge_config.yaml', '2_clean_sample/out/sample_data.rds', '3_filter/out/summary_sites.rds', '4_discharge/out/flow.rds', target_name)
+    command: merge_sample_flow('5_merge/cfg/merge_config.yaml', sample_data, summary_sites, flow, target_name)

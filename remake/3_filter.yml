@@ -15,10 +15,10 @@ sources:
 targets:
   3_filter:
     depends: 
-      - 3_filter/out/summary_flow.rds
+      - summary_flow
   
-  3_filter/out/summary_sites.rds: 
-    command: summarize_sites('2_clean_sample/out/sample_data.rds', '1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx', '3_filter/cfg/filter_config.yaml', target_name) 
+  summary_sites: 
+    command: summarize_sites(sample_data, '1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx', '3_filter/cfg/filter_config.yaml') 
     
-  3_filter/out/summary_flow.rds:
-    command: summarize_flow('3_filter/out/summary_sites.rds', target_name)
+  summary_flow:
+    command: summarize_flow(summary_sites)

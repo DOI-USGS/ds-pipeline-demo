@@ -1,13 +1,11 @@
 library(dataRetrieval)
 
-get_flow <- function(flow.file, save.as){
-
-  summary.flow <- readRDS(flow.file)
+get_flow <- function(summary.flow){
   
   all_flow <- readNWISdv(summary.flow$siteID,"00060",
                          startDate = min(summary.flow$start),
                          endDate = max(summary.flow$end))
   
-  saveRDS(all_flow, save.as)
+  return(all_flow)
   
 }

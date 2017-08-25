@@ -1,10 +1,8 @@
 library(dplyr)
 
-summarize_samples <- function(sample.file, config.args){
+summarize_samples <- function(sample.data, config.args){
   
-  data.wide <- readRDS(sample.file)
-  
-  summary.samples <- data.wide %>%
+  summary.samples <- sample.data %>%
     group_by(SITE) %>%
     summarize(begin = min(DATE,na.rm = TRUE),
               end = max(DATE,na.rm = TRUE),

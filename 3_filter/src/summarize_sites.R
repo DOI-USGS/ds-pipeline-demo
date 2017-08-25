@@ -2,11 +2,11 @@ library(yaml)
 library(dplyr)
 library(readxl)
 
-summarize_sites <- function(sample.file, site.file, config.file, save.as) {
+summarize_sites <- function(sample.data, site.file, config.file) {
   
   config.args <- yaml.load_file(config.file)
   
-  summary.samples <- summarize_samples(sample.file, config.args)
+  summary.samples <- summarize_samples(sample.data, config.args)
   
   site.info <- read_excel(site.file, sheet = config.args$fetch.args[["sheet"]])
   
@@ -17,5 +17,5 @@ summarize_sites <- function(sample.file, site.file, config.file, save.as) {
     rename(siteID = `USGS Flow Site to use`) %>%
     filter(!is.na(siteID)) 
   
-  saveRDS(summary.sites, file=save.as)
+  return(summary.sites)
 }

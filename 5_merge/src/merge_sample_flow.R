@@ -2,15 +2,12 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.csv.as, save.eLists.in){
+merge_sample_flow <- function(merge.config, all.samples, site.summary, all.flow, save.csv.as, save.eLists.in){
   
   config.args <- yaml.load_file(merge.config)
   
   params <- data.frame(config.args$params, stringsAsFactors = FALSE)
 
-  all.samples <- readRDS(sample.file)
-  all.flow <- readRDS(flow.file)
-  site.summary <- readRDS(site.file)
   
   master_list <- data.frame(id = character(),
                             complete = logical(),

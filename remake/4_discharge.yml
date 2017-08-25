@@ -12,7 +12,7 @@ sources:
 targets:
   4_discharge:
     depends: 
-      - 4_discharge/out/flow.rds
+      - flow
   
-  4_discharge/out/flow.rds: 
-    command: get_flow('3_filter/out/summary_flow.rds', target_name) 
+  flow:
+    command: get_flow(summary_flow) 
