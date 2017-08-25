@@ -17,7 +17,7 @@ sources:
 targets:
   2_clean_sample:
     depends: 
-      - 2_clean_sample/out/sample_data.rds
+      - sample_data
   
-  2_clean_sample/out/sample_data.rds: 
-    command: clean_sample_data('1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx', target_name)
+  sample_data: 
+    command: clean_sample_data('1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx')

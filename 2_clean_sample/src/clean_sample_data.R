@@ -6,7 +6,7 @@ library(data.table)
 library(yaml)
 
 
-clean_sample_data <- function(sample.file, save.as){
+clean_sample_data <- function(sample.file){
 
   sheet.names <- excel_sheets(sample.file)
   
@@ -55,8 +55,5 @@ clean_sample_data <- function(sample.file, save.as){
   
   
   names(data.wide) <- gsub("value.new_","",names(data.wide))
-  
-  dir.create(dirname(save.as), recursive = TRUE, showWarnings = FALSE)
-  
-  saveRDS(data.wide, file = save.as)
+  return(data.wide)
 }
