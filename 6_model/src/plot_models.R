@@ -1,19 +1,23 @@
 
-plot_models <- function(model.dir, save.pdf.as) {
+plot_models <- function(model.status, save.pdf.as) {
   
-  master.list <- dir(model.dir, pattern='*_lm.rds')
+  status <- read.csv(model.status, stringsAsFactors = FALSE)
   
   graphics.off()
   pdf(file = save.pdf.as)
   
-  for(i in master.list){
-    lm.out <- readRDS(file = file.path(model.dir, i))
-    
-    par(mfrow=c(2,2), oma = c(1,1,1,1))
-    for(j in 1:4){
-      plot(lm.out, which=j)
-      title(i)
+  for(j in 1:nrow(status)){
+    if (status$model_complete[j]){
+      
+      lm.out <- readRDS(file = status$model_path[j])
+      
+      par(mfrow=c(2,2), oma = c(1,1,1,1))
+      for(i in 1:4){
+        plot(lm.out, which=i)
+        title(status$id[j])
+      }
     }
+    
   }
   
   dev.off()

@@ -76,7 +76,8 @@ merge_sample_flow <- function(merge.config, all.samples, site.summary, all.flow)
         next
       }
       
-      data.out[['eList']][[i]] <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
+      e.name <- paste0(i,"_",params$paramShortName[j])
+      data.out[['eList']][[e.name]] <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
       
       master_list <- bind_rows(master_list, 
                                data.frame(id = paste(i, params$paramShortName[j], sep="_"),

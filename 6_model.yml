@@ -14,11 +14,10 @@ sources:
 targets:
   6_model:
     depends: 
-      - 6_model/doc/progress.csv
       - 6_model/doc/model_check.pdf
   
   6_model/doc/progress.csv: 
-    command: run_models('5_merge/doc/progress.csv', '5_merge/out/', target_name, '6_model/out')
+    command: run_models('5_merge/doc/progress.csv', eLists, target_name, I('6_model/out'))
     
   6_model/doc/model_check.pdf:
-    command: plot_models('6_model/out/', target_name)
+    command: plot_models('6_model/doc/progress.csv', target_name)
