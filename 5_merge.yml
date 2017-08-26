@@ -15,6 +15,16 @@ targets:
   5_merge:
     depends: 
       - 5_merge/doc/progress.csv
+      - 5_merge/doc/data_checks.pdf
   
-  5_merge/doc/progress.csv: 
-    command: merge_sample_flow('5_merge/cfg/merge_config.yaml', sample_data, summary_sites, flow, target_name)
+  merged_flow: 
+    command: merge_sample_flow('5_merge/cfg/merge_config.yaml', sample_data, summary_sites, flow)
+  
+  5_merge/doc/progress.csv:
+    command: as.progress_csv(merged_flow, target_name)
+    
+  eLists:
+    command: as.eLists(merged_flow)
+    
+  5_merge/doc/data_checks.pdf:
+    command: plot_eLists(eLists, target_name)
