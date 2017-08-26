@@ -1,14 +1,9 @@
-# Ensures that the entire project is up to date
+target_default: all
 
 packages:
   - remake
 
-includes:
-  - 1_get_raw_data.yml
-  - 2_clean_sample.yml
-  - 3_filter.yml
-  - 4_discharge.yml
-  - 5_merge.yml
+include:
   - 6_model.yml
 
 targets:
