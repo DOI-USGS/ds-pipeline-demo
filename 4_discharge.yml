@@ -1,0 +1,18 @@
+target_default: 4_discharge
+
+include:
+  - 3_filter.yml
+
+packages:
+  - dataRetrieval
+  
+sources:
+  - 4_discharge/src/get_flow.R
+
+targets:
+  4_discharge:
+    depends: 
+      - flow
+  
+  flow:
+    command: get_flow(summary_flow) 

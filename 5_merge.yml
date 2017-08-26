@@ -1,0 +1,30 @@
+target_default: 5_merge
+
+include:
+  - 4_discharge.yml
+
+packages:
+  - EGRET
+  - dplyr
+  - yaml
+  
+sources:
+  - 5_merge/src/merge_sample_flow.R
+
+targets:
+  5_merge:
+    depends: 
+      - 5_merge/doc/progress.csv
+      - 5_merge/doc/data_checks.pdf
+  
+  merged_flow: 
+    command: merge_sample_flow('5_merge/cfg/merge_config.yaml', sample_data, summary_sites, flow)
+  
+  5_merge/doc/progress.csv:
+    command: as.progress_csv(merged_flow, target_name)
+    
+  eLists:
+    command: as.eLists(merged_flow)
+    
+  5_merge/doc/data_checks.pdf:
+    command: plot_eLists(eLists, target_name)

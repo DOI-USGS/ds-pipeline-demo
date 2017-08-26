@@ -1,0 +1,10 @@
+depends:
+  EGRET:
+    repo: CRAN
+    version: 	2.6.0
+  dplyr:
+    repo: CRAN
+    version: 0.7.2
+  yaml:
+    repo: CRAN
+    version: 2.1.14

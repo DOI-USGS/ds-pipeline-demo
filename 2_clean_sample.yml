@@ -1,0 +1,23 @@
+target_default: 2_clean_sample
+
+include:
+  - 1_get_raw_data.yml
+
+packages:
+  - readxl
+  - tidyr
+  - stringr
+  - dplyr
+  - data.table
+  - yaml
+  
+sources:
+  - 2_clean_sample/src/clean_sample_data.R
+
+targets:
+  2_clean_sample:
+    depends: 
+      - sample_data
+  
+  sample_data: 
+    command: clean_sample_data('1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx')

@@ -2,21 +2,12 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge_config){
+merge_sample_flow <- function(merge.config, all.samples, site.summary, all.flow){
   
-  config.args <- yaml.load_file(merge_config)
+  config.args <- yaml.load_file(merge.config)
   
-  fetch.args <- config.args$fetch.args
-  save.args <- config.args$save.args
   params <- data.frame(config.args$params, stringsAsFactors = FALSE)
 
-  all.samples <- readRDS(file.path(fetch.args[["sample.path"]],fetch.args[["sample.file"]]))
-  all.flow <- readRDS(file.path(fetch.args[["flow.path"]],fetch.args[["flow.file"]]))
-  site.summary <- readRDS(file.path(fetch.args[["site.path"]],fetch.args[["site.file"]]))
-  
-
-  dir.create(file.path(save.args[["save.path"]]),recursive = TRUE, showWarnings = FALSE)
-  pdf(file = file.path(save.args[["save.path"]],save.args[["save.graph"]]))
   
   master_list <- data.frame(id = character(),
                             complete = logical(),
@@ -24,8 +15,9 @@ merge_sample_flow <- function(merge_config){
                             missing_all_flow = logical(),
                             stringsAsFactors = FALSE)
   
-  
+  data.out <- list(eList = list(), master.list = data.frame(stringsAsFactors = FALSE))
   for(i in site.summary$SITE){
+    
     sample.data <- filter(all.samples, SITE == i)
     flow_site <- site.summary$siteID[which(site.summary$SITE == i)]
     flow <- filter(all.flow, site_no == flow_site)
@@ -36,7 +28,7 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = TRUE,
                                           stringsAsFactors = FALSE))
-      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+      data.out$master.list <- master_list
       next
     }
     names(flow) <- c('agency', 'site', 'dateTime', 'value', 'code')
@@ -57,7 +49,7 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+        data.out$master.list <- master_list
         next
       }
       compressedData <- compressData(sample.sub, verbose=FALSE)
@@ -80,14 +72,12 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+        data.out$master.list <- master_list
         next
       }
       
-      eList <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
-      saveRDS(eList, file = file.path(save.args[["save.path"]],paste0(i,"_",params$paramShortName[j],".rds")))
-      
-      plot(eList)
+      e.name <- paste0(i,"_",params$paramShortName[j])
+      data.out[['eList']][[e.name]] <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
       
       master_list <- bind_rows(master_list, 
                                data.frame(id = paste(i, params$paramShortName[j], sep="_"),
@@ -95,15 +85,30 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = FALSE,
                                           stringsAsFactors = FALSE))
-      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+      
     }
     
   }
-  
-  dev.off()
-  
-  
-
+  data.out$master.list <- master_list
+  return(data.out)
 }
 
-merge_sample_flow(merge_config = "5_merge/in/merge_config.yaml")
+as.progress_csv <- function(merged.sample.flow, file.name){
+  progress <- merged.sample.flow$master.list
+  write.csv(progress, file = file.name, row.names = FALSE)
+}
+
+as.eLists <- function(merged.sample.flow){
+  return(merged.sample.flow$eList)
+}
+
+plot_eLists <- function(eLists, save.pdf.as='5_merge/doc/data_checks.pdf') {
+  
+  graphics.off()
+  pdf(file = save.pdf.as)
+  for(eList in eLists){
+    plot(eList)
+  }
+  dev.off()
+  
+}
