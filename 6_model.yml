@@ -21,3 +21,4 @@ targets:
     
   6_model/doc/model_check.pdf:
     command: plot_models('6_model/doc/progress.csv', target_name)
+    plot: true

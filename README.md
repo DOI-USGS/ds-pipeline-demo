@@ -2,45 +2,29 @@
 
 ## About this workflow
 
-This project uses [GNU `make`](https://www.gnu.org/software/make), a file dependency manager that ensures that our analysis scripts get run in a sensible order. `make` defines a formal structure for declaring the required scripts and input files ('dependencies') for building each output file, and `make` uses that structure to build the entire project or specific files within the project when you ask. `make` is great for complex projects because it is economical: it _only_ runs those scripts that are stricly necessary to update a given output file, and it _only_ regenerates an output file if the file's dependencies have changed. This economy means that you can focus on single analysis task at a time, rarely wait for your computer to redo preceding tasks, and yet remain confident that your project is fully reproducible from raw data to final report. `make` has been widely used in software development for [decades](https://en.wikipedia.org/wiki/Make_(software)) and continues to be well maintained and documented. Its use in data analysis projects is less common, but equally useful -- we think you'll like it!
+This project uses [`remake`](https://github.com/richfitz/remake), a file dependency manager that ensures that our analysis scripts get run in a sensible order. from richfitz:
+
+You describe the beginning, intermediate and end points of your analysis, and how they flow together.
+
+* "**targets**" are the points in your analysis.  They can be either files (data files for input; tables, plots, knitr reports for output) or they can be R objects (representing processed data, results, fitted models, etc).
+* "**rules**" are how the targets in your analysis relate together and are simply the names of R functions.
+* "**dependencies**" are the targets that need to already be made before a particular target can run (for example, a processed data set might depend on downloading a file; a plot might depend on a processed data set).
 
 ## Setup
 
-Configuration to use `make` with this R project may involve these steps:
+Configuration to use `remake` with this R project is really simple!:
 
-1. Ensure that the current version of Rscript is available on your bash PATH. A good place to do this is the .bash_profile file in your HOME directory, where HOME is whatever bash, not RStudio, believes it to be (type `echo $HOME` or `echo ~` in bash to find out). This file+line may have been added for you when you installed Git.
-    ```
-    ### HOME/.bash_profile ###
-    export PATH=$PATH:/c/Program\ Files/R/R-3.4.1/bin/x64:/c/Program\ Files/R/R-3.4.1/bin/x64:/c/Program\ Files/R/R-3.4.1/bin/x64
-    ```
+1. install `remake`:
+```r
+devtools::install_github("richfitz/remake")
+```
 
-2. Especially on Windows, you may find that your `R_USER` environment variable is different between the RStudio console and a bash R session, even if you open bash from RStudio. The common pattern is that RStudio calls your Documents directory home, while bash calls your Documents/.. directory home. This is inconvenient for automatically loading profile information as found in .Rprofile, etc., so to resolve this, (a) create two .Rprofiles, one in each possible home. One of them should contain all important R calls, while the other one should simply source the first, and (b) in the important .Rprofile, define the R_USER variable to be the one containing your user R library (e.g., R/xxx-library/3.4).
+2. install any missing packages that this project requires that you don't already have:
+```r
+remake::install_missing_packages()
+```
 
-    The first file to edit (or create) is called .Rprofile and lives in the directory path returned when you run `Sys.getenv("R_USER")` in the RStudio console.
-    
-    ```
-    ### RStudio-R_USER/.Rprofile (the important one) ####
-    # set R_USER
-    Sys.setenv(R_USER="C:/Users/yourusername/Documents")
-    ```
-    
-    The second file to edit (or create) is also called .Rprofile, but it lives in the directory path returned when you run `Sys.getenv("R_USER")` from an R session in bash: enter `R` at the bash prompt to open an R session and an R prompt, then type `Sys.getenv("R_USER")` at that R prompt.
-    ```
-    ### bash-R_USER/.Rprofile (the redirect one) ####
-    source('~/Documents/.Rprofile')
-    ```
-
-3. For bash to recognize your user R library, you may need to explicitly add it to `.libPaths()`, as follows. We first set the value of `$R_USER` (see above) and then use that value to set the path:
-
-    ```
-    ### RStudio-R_USER/.Rprofile (adding lines to the above) ####
-    # set R library paths
-    version_maj_min <- paste(unclass(getRversion())[[1]][1:2], collapse='.')
-    .libPaths(c(file.path(Sys.getenv("R_USER"), "R/win-library", version_maj_min),
-                file.path(Sys.getenv('R_HOME'), "library")))
-    ```
-
-4. If there are credentials involved, our team will likely be using the `dssecrets` package. This is a private package, so to install from GitHub, it will be useful to specify a [GitHub Personal Access Token](https://github.com/settings/tokens) (`GITHUB_PAT`) in your environment variables. It may also be necessary to tell `secret` exactly where to look for your private key (`USER_KEY`) that matches your public key in `dssecrets`. You can specify both variables in the same place: the same .Rprofile file mentioned twice above.
+3. If there are credentials involved, our team will likely be using the `dssecrets` package. This is a private package, so to install from GitHub, it will be useful to specify a [GitHub Personal Access Token](https://github.com/settings/tokens) (`GITHUB_PAT`) in your environment variables. It may also be necessary to tell `secret` exactly where to look for your private key (`USER_KEY`) that matches your public key in `dssecrets`. You can specify both variables in the same place: the same .Rprofile file mentioned twice above.
     ```
     ### RStudio-R_USER/.Rprofile (adding still more lines) ####
     # Set additional environment variables
@@ -52,53 +36,98 @@ Configuration to use `make` with this R project may involve these steps:
 
 ## Building the project
 
-Build this project, or pieces of it, using `make`. You can do this either in RStudio using (Ctrl/Cmd)+Shift+B, or in bash (use Alt,t,s to open a bash window). The basic shell command is `make -f [makefile.mak]` where the specific makefile you want depends on which phase or target you want to build.
+Build this project, or pieces of it, using `remake`. 
+```r
+library(remake)
+# build the entire project:
+make() 
 
-### Building from bash
+# build only one stage of the project:
+make(remake_file = "3_filter.yml")
 
-The following are examples of complete commands to be typed in the bash shell:
-
-To build the entire project, build the main Makefile. Because 'Makefile' is the default filename for `make`, all you need to type is the program name:
-```
-make
-```
-
-To build the third phase and any of its dependencies:
-```
-make -f build/3_filter.mak
+# build only one target of the project:
+make("5_merge/doc/progress.csv")
 ```
 
-To build just the summary_sites.rds target of phase 3:
-```
-make -f build/3_filter.mak 3_filter/out/summary_sites.rds
+## debugging in R
+
+`remake` is "unapologetically R focussed", and supports debugging of functions by inserting `browser()` commands inline to your functions
+
+
+Want to do things the old fashioned way? you can create the script that `remake` would execute if all targets were out of date:
+```r
+remake::make_script()
+ [1] "library(\"remake\")"
+ [2] "library(\"EGRET\")"
+ [3] "library(\"yaml\")"
+ [4] "library(\"dplyr\")"
+ [5] "library(\"dataRetrieval\")"
+ [6] "library(\"readxl\")"
+ [7] "library(\"tidyr\")"
+ [8] "library(\"stringr\")"
+ [9] "library(\"data.table\")"
+[10] "library(\"aws.s3\")"
+[11] "library(\"aws.signature\")"
+[12] "source(\"6_model/src/run_models.R\")"
+[13] "source(\"6_model/src/plot_models.R\")"
+[14] "source(\"5_merge/src/merge_sample_flow.R\")"
+[15] "source(\"4_discharge/src/get_flow.R\")"
+[16] "source(\"3_filter/src/summarize_sites.R\")"
+[17] "source(\"3_filter/src/summarize_samples.R\")"
+[18] "source(\"3_filter/src/summarize_flow.R\")"
+[19] "source(\"2_clean_sample/src/clean_sample_data.R\")"
+[20] "source(\"lib/s3.R\")"
+[21] "dir.create(\"6_model/doc\", FALSE, TRUE)"
+[22] "dir.create(\"5_merge/doc\", FALSE, TRUE)"
+[23] "dir.create(\"1_get_raw_data/out\", FALSE, TRUE)"
+[24] "get_s3(\"1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx\", \"lib/s3_config.yaml\")"
+[25] "sample_data <- clean_sample_data(\"1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx\")"
+[26] "get_s3(\"1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx\", \"lib/s3_config.yaml\")"
+[27] "summary_sites <- summarize_sites(sample_data, \"1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx\", \"3_filter/cfg/filter_config.yaml\")"
+[28] "summary_flow <- summarize_flow(summary_sites)"
+[29] "flow <- get_flow(summary_flow)"
+[30] "merged_flow <- merge_sample_flow(\"5_merge/cfg/merge_config.yaml\", sample_data, summary_sites, flow)"
+[31] "as.progress_csv(merged_flow, \"5_merge/doc/progress.csv\")"
+[32] "eLists <- as.eLists(merged_flow)"
+[33] "run_models(\"5_merge/doc/progress.csv\", eLists, \"6_model/doc/progress.csv\", \"6_model/out\")"
+[34] "pdf(\"6_model/doc/model_check.pdf\")"
+[35] "plot_models(\"6_model/doc/progress.csv\", \"6_model/doc/model_check.pdf\")"
+[36] "dev.off()"
+
+# or if you want to capture this in a script that you can source:
+cat(remake::make_script(), file = 'MMSD_remake_script.R', sep = '\n')
 ```
 
-To see what which commands are due to be run, without actually running them (for phase 3 in this example):
+## starting fresh
+like `make`, you can start a "clean" build:
+```r
+remake::make("clean")
+<  MAKE > clean
+[ CLEAN ] tidy
+[  READ ]                                                  |  # loading packages
+(   DEL ) merged_flow                                      |  rm("merged_flow")
+(   DEL ) eLists                                           |  rm("eLists")
+(   DEL ) flow                                             |  rm("flow")
+(   DEL ) summary_sites                                    |  rm("summary_sites")
+(   DEL ) summary_flow                                     |  rm("summary_flow")
+(   DEL ) sample_data                                      |  rm("sample_data")
+[ CLEAN ] clean
+(   DEL ) 6_model/doc/progress.csv                         |  file.remove("6_model/doc/progress.csv")
+(   DEL ) 6_model/doc/model_check.pdf                      |  file.remove("6_model/doc/model_check.pdf")
+(   DEL ) 5_merge/doc/progress.csv                         |  file.remove("5_merge/doc/progress.csv")
+(   DEL ) 5_merge/doc/data_checks.pdf                      |  file.remove("5_merge/doc/data_checks.pdf")
+(   DEL ) 1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx       |  file.remove("1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx")
+(   DEL ) 1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx |  file.remove("1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx")
 ```
-make -f build/3_filter.mak -n
+Note that the above command deletes files and also gets rid of R objects. 
+Alternatively, you can delete individual targets:
+```r
+remake::delete("6_model/doc/progress.csv")
 ```
-
-### Building from RStudio
-
-If you want to build from RStudio, configure your Build options (Build Tab | More | Configure Build Tools). In the "Additional arguments" box, type everything in the command except the first word, `make `. The "Additional arguments" that correspond to the preceding four examples are:
-```
-[blank]
-```
-```
--f build/3_filter.mak
-```
-```
--f build/3_filter.mak 3_filter/out/summary_sites.rds
-```
-```
--f build/3_filter.mak -n
-```
-Pick one of these lines to enter in "Additional arguments" and you'll be able to run that line with just the (Ctrl/Cmd)+Shift+B shortcut.
 
 ### What happens in a build
 
-Subfolders named 'out' and 'log' exist within each numbered folder, and there are a few 'doc' subfolders here and there. On GitHub, these are empty except for README.md files. The README.md files serve as placeholders so that the directories can be versioned and don't need to be created by the project scripts. When you build the project, these folders become populated with data files, figures, etc. ('out'), R session logfiles ('log'), and ancillary documentation ('doc'). 
-
+Subfolders named 'out' and 'log' exist within each numbered folder, and there are a few 'doc' subfolders here and there. On GitHub, these are empty except for README.md files. The README.md files serve as placeholders so that the directories can be versioned and don't need to be created by the project scripts. When you build the project, these folders become populated with data files, figures, etc. ('out'), and ancillary documentation ('doc'). 
 
 ## R scripts
 
@@ -136,28 +165,13 @@ This step runs a simple `lm` model on the data. It also outputs a progress.csv f
 
 ### Dependency tree
 
-[![Dependencies](build/make_diagram.png)](build/make_diagram.svg)
+[![Dependencies](6_model/remake_diagram.png)
 
-The procedure for making a make dependency diagram could surely be simplified...I started at a Software Carpentry [instructor's guide](http://swcarpentry.github.io/swc-releases/2016.06/make-novice/extras/guide.html), downloaded a Scientific Linux virutal machine at [osboxes.org](http://www.osboxes.org/scientific-linux/#scientific-linux-7-3-vmware), opened the virtual machine with Oracle VirtualBox, installed graphviz & git & gcc, built makefile2graph according to the SW Carpentry instructions, and created the .dot file there like so:
-
-```
-make -f build/6_model.mak -Bnd | make2graph > make_diagram.dot
-```
-
-And because I have yet to get Guest Additions working on that box, I uploaded the make_diagram.dot to Google Drive and downloaded onto my host computer. Then I installed the 'DOT' R package and ran
-
+The procedure for making a remake dependency diagram:
 ```r
-dot(paste(grep('build', readLines('build/make_diagram.dot'), invert=TRUE, value=TRUE), collapse=' '), file='build/make_diagram.svg')
+remake::diagram()
 ```
-
-Clearly lots of room for improvement here:
-
-- being able to build the .dot file without a virtual machine
-- being able to build the .dot file a version of the directory that has all the cached files would be great
-- something prettier (mess with the colors or rendering of the .dot file, maybe)
-
-...but hey, it's a diagram!
-
+which also takes the same arguments as `remake::make()`, so you can build a diagram for a stage, the whole project, or a single target.
 
 ## Disclaimer
 
