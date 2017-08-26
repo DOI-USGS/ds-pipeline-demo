@@ -6,7 +6,8 @@
 	@echo "Made all for 1_get_raw_data.mak"
 
 # the following rule creates an .s3 status indicator file corresponding to each data file. we'll probably also commit these .s3 files, so this rule will only be used the first time (per file) the first person runs it
-1_get_raw_data/out/%.s3 :
-	${DATETIME} > $@ # create the .s3 file
+1_get_raw_data/out/%.s3 : lib/s3_inventory.tsv
+	@make -s $@fromcache
 
 include build/macros.mak
+include build/s3.mak

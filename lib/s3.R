@@ -37,3 +37,25 @@ list_s3 <- function(s3.config="lib/s3_config.yaml") {
   dplyr::filter(bucket_df, grepl(sprintf("^%s/.+", s3_config$s3Path),Key))
   
 }
+
+inventory_s3 <- function(s3.inventory="lib/s3_inventory.tsv", s3.config="lib/s3_config.yaml") {
+  
+  cache_df <- list_s3()
+  write.table(cache_df, file=s3.inventory, sep='\t', row.names=FALSE)
+  
+}
+
+make_s3_indicator <- function(file.name, s3.inventory="lib/s3_inventory.tsv", s3.config="lib/s3_config.yaml") {
+  
+  cache_df <- read.table(s3.inventory, header=TRUE, sep='\t', stringsAsFactors=FALSE, colClasses='character')
+  s3_config <- yaml.load_file(s3.config)
+  cached_file <- dplyr::filter(cache_df, Key==file.path(s3_config$s3Path, basename(file.name)))
+  if(nrow(cached_file) != 1) stop(paste0("failed to find exactly 1 cached file named ", file.name))
+  
+  datestamp <- dplyr::pull(cached_file, LastModified) %>%
+    gsub('T',' ',.) %>%
+    gsub('.',' +',.,fixed=TRUE) %>%
+    gsub('Z','0',.)
+  writeLines(datestamp, con=sprintf("%s.s3", file.name))
+  
+}

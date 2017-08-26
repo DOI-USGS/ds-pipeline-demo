@@ -3,11 +3,11 @@
 # These macros make it prettier to call R by leveraging a known project structure.
 # Try calling the examples, e.g., as `make -f macros.mak eg_dirvars`
 
-all : eg_dirvars eg_rscript eg_addlog
+## EXAMPLES ##
+
+macros_all : eg_dirvars eg_rscript eg_addlog
 	rm eg_addlog.Rlog
 	@echo "--- finished running all examples in macros.mak ---"
-
-## EXAMPLES ##
 
 # These macros separate the target's dependencies into categories by dir & extension
 # (the $@ target comes with make; see https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html)
@@ -32,8 +32,7 @@ eg_addlog : 1_get_raw_data/src/*.R
 	@echo '--- eg_addlog ---'
 	${RSCRIPT} -e 'print(1+2); message ("hi"); warning("oops")' ${ADDLOG}
 
-
-## DEFINITIONS ##
+## DEFINITIONS - GENERAL HELPERS ##
 
 # rvector turns space-separated list of unquoted strings 
 # into comma-separated list of quoted strings wrapped in c()
@@ -68,16 +67,3 @@ ADDLOG=-e 'warnings()' -e 'devtools::session_info()' > ${LOGFILE} 2>&1
 
 # this macro creates a timestamp text string in UTC
 DATETIME=echo "$(shell date -u '+%Y-%m-%d %H:%M:%S %z')"
-
-# for attaching to the end of an RSCRIPT expression. posts the data file to S3, creates an .s3 status indictor file, and updates the data file's timestamp so make understands that it's up to date relative to the status file.
-POSTS3=-e 'post_s3(file.name="$(subst .s3,,$@)", s3.config="lib/s3_config.yaml")'\
-		${ADDLOG};\
-	${DATETIME} > $@;\
-	touch $(subst .s3,,$@)
-
-# this rule automatically looks to s3 if an *.s3 file exists and the corresponding * file is required. important for a shared cache.
-% : %.s3\
-		lib/s3.R lib/s3_config.yaml
-	${RSCRIPT}\
-		-e 'get_s3(file.name="$@", s3.config="lib/s3_config.yaml")'\
-		-e 'warnings()' -e 'devtools::session_info()' > $(dir $(patsubst %/,%,$(dir $@)))log/$(notdir $(basename $@)).s3log 2>&1
