@@ -6,7 +6,10 @@ library(data.table)
 library(yaml)
 
 
-clean_sample_data <- function(sample.file, save.as){
+clean_sample_data <- function(
+  sample.file="1_get_raw_data/out/USGS_WQ_DATA_02-16.xlsx",
+  save.as="2_clean_sample/out/sample_data.rds"
+){
 
   sheet.names <- excel_sheets(sample.file)
   

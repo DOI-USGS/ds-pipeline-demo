@@ -9,13 +9,13 @@
 		1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx\
 		2_clean_sample/out/sample_data.rds\
 		3_filter/cfg/filter_config.yaml\
-		lib/s3.R lib/s3_config.yaml
+		lib/src/s3.R lib/cfg/s3_config.yaml
 	${RSCRIPT} -e 'summarize_sites(\
 		sample.file="$(word 4,$^)",\
 		site.file="$(word 3,$^)",\
 		config.file="$(word 5,$^)",\
 		save.as="$(subst .s3,,$@)")'\
-		-e 'post_s3(file.name="$(subst .s3,,$@)", s3.config="lib/s3_config.yaml")'\
+		-e 'post_s3(file.name="$(subst .s3,,$@)", s3.config="lib/cfg/s3_config.yaml")'\
 		${POSTS3}
 
 # Other ways you could make the summary_sites target:

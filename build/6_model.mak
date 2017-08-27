@@ -21,7 +21,7 @@
 6_model/doc/model_check.pdf.s3 :\
 		6_model/src/plot_models.R\
 		6_model/out/*_lm.rds\
-		lib/s3.R lib/s3_config.yaml
+		lib/src/s3.R lib/cfg/s3_config.yaml
 	${RSCRIPT} -e 'plot_models(\
 		model.dir="$(dir $(word 2,$^))",\
 		save.pdf.as="$(subst .s3,,$@)")'\

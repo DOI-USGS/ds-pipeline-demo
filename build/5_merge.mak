@@ -26,7 +26,7 @@
 5_merge/doc/data_checks.pdf.s3 :\
 		5_merge/src/merge_sample_flow.R\
 		5_merge/out/*.rds\
-		lib/s3.R lib/s3_config.yaml
+		lib/src/s3.R lib/cfg/s3_config.yaml
 	${RSCRIPT} -e 'plot_eLists(eList.dir="5_merge/out", save.pdf.as="$(subst .s3,,$@)")' ${POSTS3}
 
 # recursively include all previous phase & helper makefiles
