@@ -1,7 +1,10 @@
 library(dplyr)
 
-summarize_flow <- function(smry.sample.file, save.as) {
-
+summarize_flow <- function(
+  smry.sample.file="3_filter/out/summary_sites.rds",
+  save.as="3_filter/out/summary_flow.rds"
+) {
+  
   summary.samples <- readRDS(smry.sample.file)
   
   summary.flow <- summary.samples %>%

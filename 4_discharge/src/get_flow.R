@@ -1,7 +1,10 @@
 library(dataRetrieval)
 
-get_flow <- function(flow.file, save.as){
-
+get_flow <- function(
+  flow.file="3_filter/out/summary_flow.rds",
+  save.as="4_discharge/out/flow.rds"
+){
+  
   summary.flow <- readRDS(flow.file)
   
   all_flow <- readNWISdv(summary.flow$siteID,"00060",

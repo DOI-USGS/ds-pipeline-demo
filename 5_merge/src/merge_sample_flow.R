@@ -2,7 +2,14 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, save.csv.as, save.eLists.in){
+merge_sample_flow <- function(
+  merge.config="5_merge/cfg/merge_config.yaml",
+  sample.file="2_clean_sample/out/sample_data.rds",
+  site.file="3_filter/out/summary_sites.rds",
+  flow.file="4_discharge/out/flow.rds",
+  save.csv.as="5_merge/doc/progress.csv",
+  save.eLists.in="5_merge/out"
+){
   
   config.args <- yaml.load_file(merge.config)
   
@@ -94,7 +101,10 @@ merge_sample_flow <- function(merge.config, sample.file, site.file, flow.file, s
   }
 }
 
-plot_eLists <- function(eList.dir='5_merge/out', save.pdf.as='5_merge/doc/data_checks.pdf') {
+plot_eLists <- function(
+  eList.dir='5_merge/out',
+  save.pdf.as='5_merge/doc/data_checks.pdf'
+) {
   
   eList.files <- dir(eList.dir, pattern='.rds', full.names=TRUE)
   

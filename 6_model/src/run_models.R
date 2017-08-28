@@ -1,7 +1,12 @@
 library(EGRET)
 library(yaml)
 
-run_models <- function(eList.csv, eList.dir, save.csv.as, save.models.in){
+run_models <- function(
+  eList.csv="5_merge/doc/progress.csv",
+  eList.dir="5_merge/out",
+  save.csv.as="6_model/doc/progress.csv",
+  save.models.in="6_model/out"
+){
   
   master.list <- read.csv(eList.csv, stringsAsFactors = FALSE)
   

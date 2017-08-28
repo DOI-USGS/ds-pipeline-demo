@@ -2,7 +2,12 @@ library(yaml)
 library(dplyr)
 library(readxl)
 
-summarize_sites <- function(sample.file, site.file, config.file, save.as) {
+summarize_sites <- function(
+  sample.file="2_clean_sample/out/sample_data.rds",
+  site.file="1_get_raw_data/out/SampleGanttCharts_wRanks.xlsx",
+  config.file="3_filter/cfg/filter_config.yaml",
+  save.as="3_filter/out/summary_sites.rds"
+) {
   
   config.args <- yaml.load_file(config.file)
   

@@ -1,5 +1,8 @@
 
-plot_models <- function(model.dir, save.pdf.as) {
+plot_models <- function(
+  model.dir="6_model/out",
+  save.pdf.as="6_model/doc/model_check.pdf"
+) {
   
   master.list <- dir(model.dir, pattern='*_lm.rds')
   
