@@ -1,6 +1,6 @@
 
 plot_models <- function(model.status, save.pdf.as) {
-  
+
   status <- read.csv(model.status, stringsAsFactors = FALSE)
   
   graphics.off()
