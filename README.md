@@ -4,6 +4,38 @@
 
 This project uses [GNU `make`](https://www.gnu.org/software/make), a file dependency manager that ensures that our analysis scripts get run in a sensible order. `make` defines a formal structure for declaring the required scripts and input files ('dependencies') for building each output file, and `make` uses that structure to build the entire project or specific files within the project when you ask. `make` is great for complex projects because it is economical: it _only_ runs those scripts that are stricly necessary to update a given output file, and it _only_ regenerates an output file if the file's dependencies have changed. This economy means that you can focus on single analysis task at a time, rarely wait for your computer to redo preceding tasks, and yet remain confident that your project is fully reproducible from raw data to final report. `make` has been widely used in software development for [decades](https://en.wikipedia.org/wiki/Make_(software)) and continues to be well maintained and documented. Its use in data analysis projects is less common, but equally useful -- we think you'll like it!
 
+## Cache sharing rules
+
+Together, `make` and `Git` do a remarkable job of enabling a shared cache of data files on a remote host such as Amazon S3 or a shared drive. Helpers in build/cache.mak and lib/src/s3.R support this workflow.
+
+### The system:
+
+Every data file (raw, intermediate, or final) is given a corresponding status indicator file, which shares the same name and location as the data file (usually `*/raw` or `*/out`) with an extra suffix: either `.s3` if the file is cached on Amazon S3 or `.loc` if the file is only stored locally. (If we were also storing some files on a shared Yeti or other drive, we'd also create and commit status files ending in `.yeti` or similar.) The status of a local repository is defined by the timestamps of these status files relative to their dependencies ('prerequisites' in `make`-speak).
+
+These indicator files allow `make` to be economical about which data files need to be acquired to run the task you're working on. `make` targets should declare the status indicator files as dependencies; then, for every corresponding data file, the target recipe should call `make` for that file before launching into the main data analysis task for that target. This ensures that every build task has the files it needs at runtime, while not wasting time downloading or rebuilding data files that aren't essential to the task at hand. When they are needed, data files with `.s3` indicator files are downloaded from S3, while data files with `.loc` indicator files are built locally, using generic rules in build/cache.mak.
+
+Our team-wide understanding of the status of the shared cache depends on these indicator files; therefore, indicator files are always Git committed. To keep the Git repository small, data files are never Git-committed.
+
+Because the status information is represented by Git-managed files, there's no need to frequently check Amazon to see the latest file timestamps. Instead, when you update a file in the cache, others on the project continue working with their current (now outdated) copies of the data file until you Git-commit and they Git-pull the corresponding indicator file. Once they pull an updated indicator file, their next call to `make` will automatically update any updated files required to build their current `make` target.
+
+The current system is generally efficient, especially if each developer wants to iterate on their step a few times before forcing others to use their updated data. However, if this system doesn't match the collaborative needs of a particular project, we could change things so that every cache update is noticed by every collaborator as soon as anybody tries to build anything. The cost of that second system is more frequent timestamp checks against the shared cache and more frequent, and sometimes unnecessary, data downloads.
+
+### Best practices:
+
+Everything is trivially easy if collaborators work in serial - i.e., Laura works on the project, edits, uploads, and commits as necessary, then logs off; then David comes in, git pulls, and proceeds to edit, upload, and commit as necessary, then logs off; then Lindsay comes in, git pulls, etc. However, if collaborators are working in parallel, we need to take care to avoid letting the cache fall out of date. "Out of date" would mean that a cached data file wrongly appears to be newer than its prerequisites, such that nobody's computer would bother trying to update it. To avoid this situation:
+
+* Communicate so that collaborators are each working on a different piece of the project. This is good practice for all projects and especially when there's a shared cache.
+
+* When working on a specific build target (job), edit the src code files for that target and build the data file as often as you like, but skip the caching by setting `post: FALSE` in lib/cfg/s3_post.yaml. Just remember to cache once before you commit by temporarily setting `post: TRUE`. And then set `post: FALSE` again, because FALSE is the preferred default state of that file on the shared Git repository. (It would often be harmless to repeatedly post the file to S3 while working on a target, but that takes extra time and could occasionally cause others to have a newer version of that file than suggested by the indicator file on their machine, possibly creating more work or unnecessary surprises for them.)
+
+* Only commit indicator files whose corresponding data file was directly affected by your work. If you build data files downstream of your current target (e.g., to preview the final product after your upstream changes), revert rather than committing the downstream indicator files.
+
+* If you merge changes from someone else and there are conflicts with indicator files whose data you are actively working on, you need to force a rebuild of those data files, because `make` will incorrectly believe everything is up to date. One way to do this is to delete and remake the affected indicator file[s].
+
+* If you merge changes from someone else and there are conflicts with indicator files whose data you are NOT actively working on, then (1) you probably could have communicated a little better, and (2) it's OK, just accept the most recent timestamp in each conflicted file, because this will more accurately reflect the state of the S3 cache.
+
+If the cache does become out of date, despite our best efforts, it's not terrible as long as we notice the problem. At that point we simply need to delete the status indicator files for all files suspected to be out of date, then rebuild using `make`. There are features in `make` for still more delicate repair operations if necessary.
+
 ## Setup
 
 Configuration to use `make` with this R project may involve these steps:

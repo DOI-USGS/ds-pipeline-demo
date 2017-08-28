@@ -48,6 +48,7 @@ endef
 
 # Helpers that create R-friendly vectors of filenames selected from
 # the dependencies listed for the current target
+STS=$(call rvector,$(filter $(wildcard *.st),$^))
 CFG=$(call rvector,$(filter $(wildcard */cfg/*.*),$^))
 SRC=$(call rvector,$(filter $(wildcard */src/*.*),$^))
 RSC=$(call rvector,$(filter $(wildcard */src/*.R),$^))
