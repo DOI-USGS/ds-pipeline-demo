@@ -1,0 +1,3 @@
+s3Profile: 'default'
+s3Path: 'MMSD'
+bucket: 'ds-pipeline'

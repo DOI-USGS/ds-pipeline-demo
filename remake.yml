@@ -1,0 +1,11 @@
+target_default: all
+
+packages:
+  - remake
+
+include:
+  - 6_model.yml
+
+targets:
+  all:
+    depends: 6_model/doc/model_check.pdf
