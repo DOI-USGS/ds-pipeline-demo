@@ -13,7 +13,12 @@ fetch.args:
   progress.file: "progress.csv"
   site.path: "3_filter/out"
   site.file: "summary_sites.rds"
+explore.args:
+  path: "6_model/doc"
+  graph: "model_check.pdf"
+log.args:
+  path: "6_model/log"
+  file: "progress.csv"
 save.args:
-  save.path: "6_model/out"
-  save.graph: "model_check.pdf"
-  save.file: "progress.csv"
+  path: "6_model/out"
+

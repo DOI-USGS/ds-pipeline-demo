@@ -2,9 +2,11 @@ library(yaml)
 
 run_models <- function(model.config){
   config.args <- yaml.load_file(model.config)
-  
+
   fetch.args <- config.args$fetch.args
   save.args <- config.args$save.args
+  explore.args <- config.args$explore.args
+  log.args <- config.args$log.args
   
   master.list <- read.csv(file.path(fetch.args[["data.path"]],fetch.args[["progress.file"]]),stringsAsFactors = FALSE)
   
