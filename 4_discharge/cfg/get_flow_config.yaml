@@ -1,0 +1,4 @@
+depends:
+  dataRetrieval:
+    repo: CRAN
+    version: 2.7.2

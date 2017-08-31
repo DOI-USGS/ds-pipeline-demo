@@ -6,27 +6,16 @@ library(data.table)
 library(yaml)
 
 
-clean_sample_data <- function(clean.config){
-  
-  config.args <- yaml.load_file(clean.config)
-  
-  fetch.args <- config.args$fetch.args
-  file.data <- fetch.args[["file.data"]]
-  fetch.path <- fetch.args[["path"]]
-  
-  save.args <- config.args$save.args
-  save.path <- save.args[["save.path"]]
-  save.file <- save.args[["save.file"]]
-  
-  sheet.names <- excel_sheets(file.path(fetch.path,file.data))
+clean_sample_data <- function(sample.file){
+
+  sheet.names <- excel_sheets(sample.file)
   
   data.full <- data.frame()
   
   for(i in sheet.names){
-    data.sheet <- read_excel(file.path(fetch.path,file.data), 
+    data.sheet <- read_excel(sample.file, 
                              sheet = i,col_types = c("text","date",
                                                      rep("text",7)))
-    
     
     data.long <- data.sheet %>%
       select(-`FC (CFU/100mL)`) %>%
@@ -66,10 +55,5 @@ clean_sample_data <- function(clean.config){
   
   
   names(data.wide) <- gsub("value.new_","",names(data.wide))
-  
-  dir.create(file.path(save.path),recursive = TRUE, showWarnings = FALSE)
-  
-  saveRDS(data.wide, file = file.path(save.path,save.file))
+  return(data.wide)
 }
-
-clean_sample_data(clean.config = "2_clean_sample/in/clean_config.yaml")
