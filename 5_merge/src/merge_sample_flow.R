@@ -2,21 +2,22 @@ library(EGRET)
 library(dplyr)
 library(yaml)
 
-merge_sample_flow <- function(merge_config){
+merge_sample_flow <- function(
+  merge.config="5_merge/cfg/merge_config.yaml",
+  sample.file="2_clean_sample/out/sample_data.rds",
+  site.file="3_filter/out/summary_sites.rds",
+  flow.file="4_discharge/out/flow.rds",
+  save.csv.as="5_merge/doc/progress.csv",
+  save.eLists.in="5_merge/out"
+){
   
-  config.args <- yaml.load_file(merge_config)
+  config.args <- yaml.load_file(merge.config)
   
-  fetch.args <- config.args$fetch.args
-  save.args <- config.args$save.args
   params <- data.frame(config.args$params, stringsAsFactors = FALSE)
 
-  all.samples <- readRDS(file.path(fetch.args[["sample.path"]],fetch.args[["sample.file"]]))
-  all.flow <- readRDS(file.path(fetch.args[["flow.path"]],fetch.args[["flow.file"]]))
-  site.summary <- readRDS(file.path(fetch.args[["site.path"]],fetch.args[["site.file"]]))
-  
-
-  dir.create(file.path(save.args[["save.path"]]),recursive = TRUE, showWarnings = FALSE)
-  pdf(file = file.path(save.args[["save.path"]],save.args[["save.graph"]]))
+  all.samples <- readRDS(sample.file)
+  all.flow <- readRDS(flow.file)
+  site.summary <- readRDS(site.file)
   
   master_list <- data.frame(id = character(),
                             complete = logical(),
@@ -36,7 +37,7 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = TRUE,
                                           stringsAsFactors = FALSE))
-      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+      write.csv(master_list, file = save.csv.as,row.names = FALSE)
       next
     }
     names(flow) <- c('agency', 'site', 'dateTime', 'value', 'code')
@@ -57,7 +58,7 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+        write.csv(master_list, file = save.csv.as,row.names = FALSE)
         next
       }
       compressedData <- compressData(sample.sub, verbose=FALSE)
@@ -80,14 +81,13 @@ merge_sample_flow <- function(merge_config){
                                             missing_all_sample = TRUE,
                                             missing_all_flow = FALSE,
                                             stringsAsFactors = FALSE))
-        write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+        write.csv(master_list, file = save.csv.as,row.names = FALSE)
         next
       }
       
       eList <- mergeReport(INFO,Daily,Sample,verbose = FALSE)
-      saveRDS(eList, file = file.path(save.args[["save.path"]],paste0(i,"_",params$paramShortName[j],".rds")))
+      saveRDS(eList, file = file.path(save.eLists.in, paste0(i,"_",params$paramShortName[j],".rds")))
       
-      plot(eList)
       
       master_list <- bind_rows(master_list, 
                                data.frame(id = paste(i, params$paramShortName[j], sep="_"),
@@ -95,15 +95,25 @@ merge_sample_flow <- function(merge_config){
                                           missing_all_sample = FALSE,
                                           missing_all_flow = FALSE,
                                           stringsAsFactors = FALSE))
-      write.csv(master_list, file = file.path(save.args[["save.path"]],save.args[["save.file"]]),row.names = FALSE)
+      write.csv(master_list, file = save.csv.as,row.names = FALSE)
     }
     
   }
-  
-  dev.off()
-  
-  
-
 }
 
-merge_sample_flow(merge_config = "5_merge/in/merge_config.yaml")
+plot_eLists <- function(
+  eList.dir='5_merge/out',
+  save.pdf.as='5_merge/doc/data_checks.pdf'
+) {
+  
+  eList.files <- dir(eList.dir, pattern='.rds', full.names=TRUE)
+  
+  graphics.off()
+  pdf(file = save.pdf.as)
+  for(eList.file in eList.files){
+    eList <- readRDS(eList.file)
+    plot(eList)
+  }
+  dev.off()
+  
+}

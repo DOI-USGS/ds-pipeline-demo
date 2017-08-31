@@ -3,4 +3,9 @@
 .RData
 .Ruserdata
 cached_data
-out/
+*/doc/*
+!*/doc/README.md
+*/log/*
+!*/log/README.md
+*/out/*
+!*/out/README.md

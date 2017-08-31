@@ -1,0 +1,16 @@
+depends:
+  EGRET:
+    repo: GitHub
+    version: 2.6.1.9002
+  dplyr:
+    repo: CRAN
+    version: 0.7.2
+  yaml:
+    repo: CRAN
+    version: 2.1.14
+params:
+  name: ["BOD20 (mg/L)","BOD5 (mg/L)","FC (MPN/100mL)","NH3 (mg/L)","TP (mg/L)","Total Suspended Solids (mg/L)"]
+  paramShortName: ["BOD20","BOD5","FC","NH3","TP","Total Suspended Solids"]
+  param.units: ["mg/L","mg/L","MPN/100mL","mg/L","mg/L","mg/L"]
+checks:
+  min.samples: 50
